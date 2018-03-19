@@ -1,0 +1,3 @@
+[run]
+source = apflow
+omit = apflow/test*

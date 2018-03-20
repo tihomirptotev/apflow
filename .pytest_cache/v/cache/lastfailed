@@ -1,3 +1,4 @@
 {
-  "apflow/counterparty/models.py": true
+  "apflow/counterparty/models.py": true,
+  "setup.py": true
 }

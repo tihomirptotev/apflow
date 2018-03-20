@@ -16,7 +16,7 @@ from ..models import (
     get_session_factory,
     get_tm_session,
 )
-from ..models import MyModel
+from ..models import Counterparty, CounterpartyNote
 
 
 @click.group()
@@ -36,6 +36,20 @@ def main(ctx, config_uri):
     ctx.obj['SESSION_FACTORY'] = session_factory
 
 
+@main.command()
+def clean():
+    """Remove *.pyc and *.pyo files recursively starting at current directory.
+
+    Borrowed from Flask-Script, converted to use Click.
+    """
+    for dirpath, dirnames, filenames in os.walk('.'):
+        for filename in filenames:
+            if filename.endswith('.pyc') or filename.endswith('.pyo'):
+                full_pathname = os.path.join(dirpath, filename)
+                click.echo('Removing {}'.format(full_pathname))
+                os.remove(full_pathname)
+
+
 @main.group()
 @click.pass_context
 def db(ctx):
@@ -51,5 +65,10 @@ def init(ctx):
         dbsession = get_tm_session(
             ctx.obj['SESSION_FACTORY'], transaction.manager)
 
-        model = MyModel(name='e', value=8)
-        dbsession.add(model)
+        counterparty = Counterparty(name='Доставчик 1',
+                                    eik_egn='123456789',
+                                    created_by=1,
+                                    updated_by=1,
+                                    id=1)
+        dbsession.add(counterparty)
+    pass

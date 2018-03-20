@@ -45,15 +45,19 @@ class TestMyViewSuccessCondition(BaseTest):
         super(TestMyViewSuccessCondition, self).setUp()
         self.init_database()
 
-        from .models import MyModel
+        from .counterparty.models import Counterparty
 
-        model = MyModel(name='one', value=55)
+        model = Counterparty(
+            name='Supplier 1',
+            eik_egn='123456789',
+            created_by=1,
+            modified_by=1)
         self.session.add(model)
 
     def test_passing_view(self):
         from .views.default import my_view
         info = my_view(dummy_request(self.session))
-        self.assertEqual(info['one'].name, 'one')
+        self.assertEqual(info['one'].name, 'Supplier 1')
         self.assertEqual(info['project'], 'Accounts Payable Workflow')
 
 

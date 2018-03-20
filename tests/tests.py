@@ -2,7 +2,7 @@ import unittest
 import transaction
 import pytest
 from pyramid import testing
-
+from sqlalchemy.exc import IntegrityError
 
 @pytest.fixture(scope='session')
 def config():
@@ -57,10 +57,16 @@ def counterparty_factory(dbsession):
 
 
 def test_create_counterparty(dbsession, counterparty_factory):
-    c1 = counterparty_factory.build(eik_egn='12')
+    c2 = counterparty_factory.build(eik_egn='123456789')
+    # c1 = counterparty_factory.build(eik_egn='1234')
+    # with transaction.manager:
+    #     with pytest.raises(IntegrityError):
+    #         dbsession.add(c1)
     with transaction.manager:
-        dbsession.add(c1)
-        a = dbsession.query(Counterparty).one()
-        # assert a.name == 'Supplier 1'
-        assert a.eik_egn == '12'
+        dbsession.add(c2)
+        c = dbsession.query(Counterparty).one()
+        assert c.eik_egn == c2.eik_egn
+    with pytest.raises(AssertionError):
+        c1 = counterparty_factory.build(eik_egn='12345678901234')
+
 

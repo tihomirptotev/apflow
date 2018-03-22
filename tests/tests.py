@@ -3,6 +3,14 @@ import transaction
 import pytest
 from pyramid import testing
 from sqlalchemy.exc import IntegrityError
+from apflow.models import (
+    get_engine,
+    get_session_factory,
+    get_tm_session,
+)
+from apflow.models.meta import Base
+import apflow.models
+
 
 @pytest.fixture(scope='session')
 def config():
@@ -14,26 +22,21 @@ def config():
     testing.tearDown()
 
 
-@pytest.fixture(scope='function')
-def dbsession(config):
+@pytest.fixture(scope='session')
+def engine(config):
     settings = config.get_settings()
-    from apflow.models import (
-        get_engine,
-        get_session_factory,
-        get_tm_session,
-    )
-    from apflow.models.meta import Base
-    import apflow.models
     engine = get_engine(settings)
-    session_factory = get_session_factory(engine)
     Base.metadata.create_all(engine)
-    session = get_tm_session(session_factory, transaction.manager)
-
-    yield session
-
-    testing.tearDown()
-    transaction.abort()
+    yield engine
     Base.metadata.drop_all(engine)
+
+
+@pytest.fixture(scope='function')
+def dbsession(engine):
+    session_factory = get_session_factory(engine)
+    session = get_tm_session(session_factory, transaction.manager)
+    yield session
+    session.rollback()
 
 
 import factory
@@ -58,15 +61,17 @@ def counterparty_factory(dbsession):
 
 def test_create_counterparty(dbsession, counterparty_factory):
     c2 = counterparty_factory.build(eik_egn='123456789')
-    # c1 = counterparty_factory.build(eik_egn='1234')
-    # with transaction.manager:
-    #     with pytest.raises(IntegrityError):
-    #         dbsession.add(c1)
     with transaction.manager:
         dbsession.add(c2)
         c = dbsession.query(Counterparty).one()
         assert c.eik_egn == c2.eik_egn
+
+
+def test_invalid_conterparty(dbsession, counterparty_factory):
     with pytest.raises(AssertionError):
-        c1 = counterparty_factory.build(eik_egn='12345678901234')
+        c = counterparty_factory.build(eik_egn='12345678901234')
+    with pytest.raises(AssertionError):
+        c1 = counterparty_factory.build(eik_egn='1234')
+
 
 

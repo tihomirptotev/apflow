@@ -66,9 +66,9 @@ def init(ctx):
             ctx.obj['SESSION_FACTORY'], transaction.manager)
 
         counterparty = Counterparty(name='Доставчик 1',
-                                    eik_egn='123456789',
+                                    eik_egn='1234567809',
                                     created_by=1,
                                     updated_by=1,
-                                    id=1)
+                                    id=2)
         dbsession.add(counterparty)
     pass

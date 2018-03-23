@@ -58,6 +58,36 @@ def counterparty_factory(dbsession):
 
     return CounterPartyFactory
 
+@pytest.fixture(scope='function')
+def user_factory(dbsession):
+    from apflow.models import User
+
+    class UserFactory(factory.alchemy.SQLAlchemyModelFactory):
+        class Meta:
+            model = User
+            sqlalchemy_session = dbsession   # the SQLAlchemy session object
+        id = factory.Sequence(lambda n: n)
+        username = factory.Faker('username')
+        email = factory.Faker('email')
+        password = 'password'
+
+    return UserFactory
+
+
+def test_create_user(dbsession, user_factory):
+    from apflow.user.models import User
+    u = user_factory(username='admin')
+
+    with pytest.raises(PermissionError):
+        u.password == 'password'
+
+    with transaction.manager:
+        dbsession.add(u)
+        t = dbsession.query(User).one()
+        assert t.username == u.username
+
+
+
 
 def test_create_counterparty(dbsession, counterparty_factory):
     c2 = counterparty_factory.build(eik_egn='123456789')

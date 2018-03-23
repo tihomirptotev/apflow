@@ -9,7 +9,7 @@ class SurrogatePK:
 
     # __table_args__ = {'extend_existing': True}
 
-    id = Column(Integer(), primary_key=True)
+    id = Column(Integer, primary_key=True)
 
     # @classmethod
     # def get_by_id(cls, record_id):

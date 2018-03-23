@@ -34,6 +34,7 @@ def main(ctx, config_uri):
 
     session_factory = get_session_factory(engine)
     ctx.obj['SESSION_FACTORY'] = session_factory
+    ctx.obj['ENGINE'] = engine
 
 
 @main.command()
@@ -59,16 +60,23 @@ def db(ctx):
 @db.command()
 @click.pass_context
 def init(ctx):
-    '''Sample script'''
+    '''Initialize database'''
+    Base.metadata.create_all(ctx.obj['ENGINE'])
+    # with transaction.manager:
+    #     dbsession = get_tm_session(
+    #         ctx.obj['SESSION_FACTORY'], transaction.manager)
 
-    with transaction.manager:
-        dbsession = get_tm_session(
-            ctx.obj['SESSION_FACTORY'], transaction.manager)
+    #     counterparty = Counterparty(name='Доставчик 1',
+    #                                 eik_egn='1234567809',
+    #                                 created_by=1,
+    #                                 updated_by=1,
+    #                                 id=2)
+    #     dbsession.add(counterparty)
+    # pass
 
-        counterparty = Counterparty(name='Доставчик 1',
-                                    eik_egn='1234567809',
-                                    created_by=1,
-                                    updated_by=1,
-                                    id=2)
-        dbsession.add(counterparty)
-    pass
+
+@db.command()
+@click.pass_context
+def drop_all(ctx):
+    '''Drop all tables from database.'''
+    Base.metadata.drop_all(ctx.obj['ENGINE'])

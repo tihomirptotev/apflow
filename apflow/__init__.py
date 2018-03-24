@@ -1,5 +1,17 @@
 from pyramid.config import Configurator
 from pyramid.authorization import ACLAuthorizationPolicy
+from pyramid.view import notfound_view_config
+from pyramid.response import Response
+import json
+
+
+@notfound_view_config(request_method='GET', renderer='json')
+def notfound(request):
+    return dict(
+        message='Resource not found.',
+        status='404 Not Found',
+        code=404,
+        content_type='application/json')
 
 
 def main(global_config, **settings):

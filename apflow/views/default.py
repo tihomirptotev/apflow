@@ -1,37 +1,42 @@
 from pyramid.response import Response
 from pyramid.view import view_config
+from pyramid.httpexceptions import HTTPNotFound
 
 from sqlalchemy.exc import DBAPIError
+from sqlalchemy.orm import load_only
+from sqlalchemy.orm.exc import NoResultFound
 
-from ..models import Counterparty
-
-
-@view_config(route_name='home', renderer='json')
-def my_view(request):
-    # try:
-    #     query = request.dbsession.query(Counterparty)
-    #     one = query.filter(Counterparty.name == 'Supplier 1').first()
-    # except DBAPIError:
-    #     return Response(db_err_msg, content_type='text/plain', status=500)
-    # return {'one': request.authenticated_userid, 'project': 'Accounts Payable Workflow'}
-    return{'name': request.authenticated_userid}
+from apflow.counterparty.models import Counterparty
+from apflow.counterparty.schemas import CounterpartySchema
 
 
-db_err_msg = """\
-Pyramid is having a problem using your SQL database.  The problem
-might be caused by one of the following things:
 
-1.  You may need to run the "initialize_apflow_db" script
-    to initialize your database tables.  Check your virtual
-    environment's "bin" directory for this script and try to run it.
+@view_config(route_name='counterparty', request_method='GET', renderer='json')
+def counterparty_list(request):
+    cp_schema = CounterpartySchema(only=('name', 'eik_egn'))
+    res = request.dbsession.query
+    res = res(Counterparty).filter(Counterparty.id > 20)
+    return [cp_schema.dump(cp).data for cp in res]
+    # q = q.options(load_only('name', 'eik_egn'))
+    # return dict(data=list(q),
+    #             columns=[col['name'] for col in q.column_descriptions])
 
-2.  Your database server may not be running.  Check that the
-    database server referred to by the "sqlalchemy.url" setting in
-    your "development.ini" file is running.
 
-After you fix the problem, please restart the Pyramid application to
-try it again.
-"""
+@view_config(route_name='counterparty_view', request_method='GET', renderer='json')
+def counterparty_view(request):
+    try:
+        id = request.matchdict['id']
+        session = request.dbsession
+        cp = session.query(Counterparty).filter_by(id=id).one()
+        cp_schema = CounterpartySchema(only=('name', 'eik_egn'))
+        return cp_schema.dump(cp).data
+    except NoResultFound:
+        raise HTTPNotFound()
+
+    # import ipdb; ipdb.set_trace()
+    # cp_schema = CounterpartySchema(only=('name', 'eik_egn'))
+    # q = request.dbsession.query
+    # q = q(Counterparty).filter(Counterparty.id > 20)
 
 
 @view_config(route_name='login', request_method='POST', renderer='json')

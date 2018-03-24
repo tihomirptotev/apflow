@@ -10,6 +10,9 @@ with open(os.path.join(here, 'CHANGES.txt')) as f:
 
 requires = [
     'bcrypt',
+    'docutils',
+    'marshmallow',
+    'marshmallow-sqlalchemy',
     'plaster_pastedeploy',
     'pyramid >= 1.9a',
     'pyramid_debugtoolbar',

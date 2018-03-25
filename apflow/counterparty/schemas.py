@@ -4,7 +4,7 @@ from .models import Counterparty
 
 
 class CounterpartySchema(ModelSchema):
-    url = fields.Url()
+    url = fields.Url(dump_only=True)
     class Meta:
         model = Counterparty
 

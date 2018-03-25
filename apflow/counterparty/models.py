@@ -29,6 +29,7 @@ class Counterparty(AuditMixin, Base):
         return value
 
 
+
 class CounterpartyNote(AuditMixin, Base):
     __tablename__ = 'counterparty_notes'
     note = Column(UnicodeText(500), index=True)

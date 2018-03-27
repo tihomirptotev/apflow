@@ -10,7 +10,7 @@ Content-Type: application/json
 
 {
     "name": "Company 991",
-    "eik_egn": "888777040"
+    "eik_egn": "888777a40"
 }
 
 ###
@@ -23,14 +23,14 @@ Content-Type: application/json
 }
 
 ###
-PUT http://localhost:6543/counterparty/7
+PUT http://localhost:6543/counterparty/4
 Content-Type: application/json
 
 {
     "name": "Company 3000",
-    "eik_egn": "123456798"
+    "eik_egn": "188456798"
 }
 
 ###
 
-DELETE http://localhost:6543/counterparty/5
+DELETE http://localhost:6543/counterparty/8

@@ -52,10 +52,11 @@ class ModelService:
 
     def update(self, id, data_dict):
         obj = self.get_by_id(id)
-        for k, v in data_dict.items():
-            setattr(obj, k, v)
-        self.request.dbsession.add(obj)
-        self.request.dbsession.flush()
+        if isinstance(obj, self.model):
+            for k, v in data_dict.items():
+                setattr(obj, k, v)
+            self.request.dbsession.add(obj)
+            self.request.dbsession.flush()
         return obj
 
     def delete(self, id):

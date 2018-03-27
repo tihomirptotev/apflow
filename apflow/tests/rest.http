@@ -1,0 +1,36 @@
+GET http://localhost:6543/counterparty/
+
+###
+
+GET http://localhost:6543/counterparty/101
+
+###
+POST http://localhost:6543/counterparty/
+Content-Type: application/json
+
+{
+    "name": "Company 991",
+    "eik_egn": "888777040"
+}
+
+###
+POST http://localhost:6543/counterparty/
+Content-Type: application/json
+
+{
+    "name": "Company 21",
+    "eik_egn": "888119280"
+}
+
+###
+PUT http://localhost:6543/counterparty/3
+Content-Type: application/json
+
+{
+    "name": "Company 3000",
+    "eik_egn": "123456798"
+}
+
+###
+
+DELETE http://localhost:6543/counterparty/2

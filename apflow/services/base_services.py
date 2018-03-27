@@ -1,3 +1,6 @@
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm.exc import NoResultFound
+
 class ModelService:
     model = None
     schema = None
@@ -13,24 +16,55 @@ class ModelService:
 
     def get_by_id(self, id):
         session = self.request.dbsession
-        return session.query(self.model).filter_by(id=id).one()
+        try:
+            return session.query(self.model).filter_by(id=id).one()
+        except NoResultFound:
+            return dict(
+                result='error',
+                message=f'Object with id: {id} does not exist.')
 
-    def create(self, json_data=None, **data):
-        if json_data:
-            obj = self.deserialize_single(json_data)
-        else:
-            obj = self.model(**data)
+    def find_by_col_name(self, col_name, value):
+        session = self.request.dbsession
+        col = getattr(self.model, col_name)
+        return session.query(self.model).filter(col==value)
+
+    def create(self, **data):
+        obj = self.model(**data)
         obj.created_by = self.user_id
         obj.updated_by = self.user_id
+        try:
+            self.request.dbsession.add(obj)
+            self.request.dbsession.flush()
+            return obj
+        except IntegrityError as e:
+            return dict(
+                result='error',
+                message='Object not created. Data does not meet the constrains.')
+
+    def create_many(self, data_list):
+        for data in data_list:
+            obj = self.model(**data)
+            obj.created_by = self.user_id
+            obj.updated_by = self.user_id
+            self.request.dbsession.add(obj)
+        self.request.dbsession.flush()
+        return
+
+    def update(self, id, data_dict):
+        obj = self.get_by_id(id)
+        for k, v in data_dict.items():
+            setattr(obj, k, v)
         self.request.dbsession.add(obj)
         self.request.dbsession.flush()
         return obj
 
-    def update(self, id, **data):
-        pass
-
     def delete(self, id):
-        pass
+        obj = self.get_by_id(id)
+        if isinstance(obj, self.model):
+            self.request.dbsession.delete(obj)
+            self.request.dbsession.flush()
+            return self.serialize_single(obj)
+        return obj
 
     def url_for_id(self, id):
         return self.request.route_url(self.route_view_name, id=id)
@@ -41,8 +75,8 @@ class ModelService:
         return res
 
     def deserialize_single(self, json_data):
-        res = self.schema.load(json_data, session=self.request.dbsession)
-        return res.data
+        res = self.schema.load(json_data)
+        return res
 
 
     def serialize_multiple(self, obj_list):

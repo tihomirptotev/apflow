@@ -20,8 +20,8 @@ class Counterparty(AuditMixin, Base):
     # __versioned__ = {}
     __tablename__ = 'counterparties'
 
-    name = Column(Unicode(length=50), index=True)
-    eik_egn = Column(Unicode(13), index=True, unique=True)
+    name = Column(Unicode(length=50), index=True, nullable=False)
+    eik_egn = Column(Unicode(13), index=True, unique=True, nullable=False)
 
     @validates('eik_egn')
     def validate_eik_egn(self, key, value):

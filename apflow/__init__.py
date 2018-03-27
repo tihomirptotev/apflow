@@ -1,3 +1,4 @@
+import json
 from pyramid.config import Configurator
 from pyramid.authorization import ACLAuthorizationPolicy
 from pyramid.view import notfound_view_config
@@ -17,11 +18,14 @@ from pyramid.security import ALL_PERMISSIONS, Allow, Deny, Everyone, DENY_ALL
 
 @notfound_view_config(request_method='GET', renderer='json')
 def notfound(request):
+    msg = 'Resource not found.'
+    request.response.status = '404 - Not Found'
+    request.response.code = 404
+    request.response.content_type = 'application/json'
     return dict(
-        message='Resource not found.',
+        message=msg,
         status='404 Not Found',
-        code=404,
-        content_type='application/json')
+        code=404)
 
 
 def add_role_principals(userid, request):

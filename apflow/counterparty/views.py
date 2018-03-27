@@ -7,11 +7,14 @@ from .services import CounterpartyService
 from .models import Counterparty
 
 
-@view_defaults(renderer='json')
-class CounterpartyView:
+
+class BaseView:
+    model_class = None
+    service_class = None
+
     def __init__(self, request):
         self.request = request
-        self.service = CounterpartyService(request)
+        self.service = self.service_class(request)
         self.user_id = 1
         if self.request.matchdict:
             self.id = self.request.matchdict['id']
@@ -20,21 +23,17 @@ class CounterpartyView:
             except NoResultFound:
                 raise HTTPNotFound
 
+    def all(self):
+        objects = self.service.list_all()
+        return self.service.serialize_multiple(objects)
 
-    @view_config(route_name='counterparty', request_method='GET')
-    def counterparty_list(self):
-        counterparties = self.service.list_all()
-        return self.service.serialize_multiple(counterparties)
-
-    @view_config(route_name='counterparty', request_method='POST', renderer='json')
-    def counterparty_add(self):
+    def add(self):
         # import ipdb; ipdb.set_trace()
         res = self.service.deserialize_single(self.request.json_body)
-        msg = ''
         if res.errors:
             msg = dict(result='error', data=res.errors, code=400)
         obj = self.service.create(**res.data)
-        if isinstance(obj, Counterparty):
+        if isinstance(obj, self.model_class):
             return self.service.serialize_single(obj)
         else:
             self.request.response.status = '400 Bad Request'
@@ -42,13 +41,10 @@ class CounterpartyView:
             self.request.response.content_type = 'application/json'
             return dict(obj)
 
-
-    @view_config(route_name='counterparty_view', request_method='GET')
-    def counterparty_view(self):
+    def view(self):
         return self.service.serialize_single(self.obj)
 
-    @view_config(route_name='counterparty_view', request_method='PUT')
-    def counterparty_update(self):
+    def update(self):
         res = self.service.deserialize_single(self.request.json_body)
         if res.errors:
             return dict(result='error', data=res.errors, code=400)
@@ -56,8 +52,7 @@ class CounterpartyView:
         obj = self.service.update(self.id, res.data)
         return self.service.serialize_single(obj)
 
-    @view_config(route_name='counterparty_view', request_method='DELETE')
-    def counterparty_delete(self):
+    def delete(self):
         res = self.service.delete(self.id)
         if res.get('result') == 'error':
             return HTTPNotFound(detail=res)
@@ -65,3 +60,8 @@ class CounterpartyView:
             return dict(result='Record deleted.', data=res)
 
 
+
+@view_defaults(route_name='counterparty', renderer='json')
+class CounterpartyView(BaseView):
+    model_class = Counterparty
+    service_class = CounterpartyService

@@ -1,3 +1,12 @@
 def includeme(config):
+    config.add_view('apflow.counterparty.views.CounterpartyView', route_name='counterparty', attr='all')
+    config.add_view('apflow.counterparty.views.CounterpartyView',
+                    route_name='counterparty', request_method='POST', attr='add')
+    config.add_view('apflow.counterparty.views.CounterpartyView',
+                    route_name='counterparty_view', attr='view')
+    config.add_view('apflow.counterparty.views.CounterpartyView',
+                    route_name='counterparty_view', request_method='PUT', attr='update')
+    config.add_view('apflow.counterparty.views.CounterpartyView',
+                    route_name='counterparty_view', request_method='DELETE', attr='delete')
     config.add_route('counterparty', '/')
     config.add_route('counterparty_view', '/{id}')

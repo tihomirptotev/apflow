@@ -5,22 +5,28 @@ from pyramid.httpexceptions import HTTPNotFound
 from sqlalchemy.exc import DBAPIError
 from sqlalchemy.orm import load_only
 from sqlalchemy.orm.exc import NoResultFound
+from apflow.user.services import UserService
 
 
 @view_config(route_name='login', request_method='POST', renderer='json')
 def login(request):
-    login = request.POST['login']
-    password = request.POST['password']
-    user_id =  (login == 'user') and (password == 'password')
+    # import ipdb; ipdb.set_trace()
+    login = request.json_body['login']
+    password = request.json_body['password']
+    service = UserService(request)
+    user = service.authenticate(login, password)
     # user_id = authenticate(login, password)  # You will need to implement this
 
-    if user_id:
+    if user:
         return {
             'result': 'ok',
-            'apflow-token': request.create_jwt_token(user_id),
-            'username': 'k13totev'
+            'token': request.create_jwt_token(
+                user['userid'],
+                roles=user['roles'],
+                username=user['username'])
         }
     else:
         return {
-            'result': 'error'
+            'result': 'error',
+            'token': None
         }

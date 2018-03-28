@@ -3,17 +3,16 @@ from pyramid.config import Configurator
 from pyramid.authorization import ACLAuthorizationPolicy
 from pyramid.view import notfound_view_config
 from pyramid.response import Response
-from pyramid.security import ALL_PERMISSIONS, Allow, Deny, Everyone, DENY_ALL
+from pyramid.security import ALL_PERMISSIONS, Allow, Deny, Everyone, DENY_ALL, Authenticated
 
 
-# class RootACL(object):
-#     __acl__ = [
-#         (Allow, 'admin', ALL_PERMISSIONS),
-#         DENY_ALL
-#     ]
+class RootACL(object):
+    __acl__ = [
+        (Allow, 'admin', ALL_PERMISSIONS)
+    ]
 
-#     def __init__(self, request):
-#         pass
+    def __init__(self, request):
+        pass
 
 
 @notfound_view_config(request_method='GET', renderer='json')
@@ -29,7 +28,8 @@ def notfound(request):
 
 
 def add_role_principals(userid, request):
-   return ['role:%s' % role for role in request.jwt_claims.get('roles', [])]
+    # import ipdb; ipdb.set_trace()
+    return request.jwt_claims.get('roles', [])
 
 
 def main(global_config, **settings):
@@ -37,11 +37,11 @@ def main(global_config, **settings):
     """
     config = Configurator(settings=settings)
     config.set_authorization_policy(ACLAuthorizationPolicy())
-    config.include('pyramid_jinja2')
+    config.set_root_factory(RootACL)
+    # config.include('pyramid_jinja2')
     config.include('pyramid_jwt')
     config.set_jwt_authentication_policy(
         settings['auth.secret'],
-        auth_type='Bearer',
         callback=add_role_principals)
     config.include('.models')
     config.include('.routes')

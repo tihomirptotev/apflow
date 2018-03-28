@@ -1,5 +1,6 @@
 GET http://localhost:6543/counterparty/
 
+Authorization: JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6WyJhZG1pbiJdLCJ1c2VybmFtZSI6ImFkbWluIiwic3ViIjoxLCJpYXQiOjE1MjIyNzc2ODZ9.DoUmGxYCDEcJsd1eQPOcUj6XDunuqiRT9vG3bfNQAIKcy2tZwtSYDm0n2IK6GY3ATa9K7i-kXSUaSWf99BK9vA
 ###
 
 GET http://localhost:6543/counterparty/101
@@ -34,3 +35,13 @@ Content-Type: application/json
 ###
 
 DELETE http://localhost:6543/counterparty/8
+
+
+###
+POST http://localhost:6543/login
+Content-Type: application/json
+
+{
+    "login": "admin",
+    "password": "1234"
+}

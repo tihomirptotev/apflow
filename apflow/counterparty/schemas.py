@@ -1,6 +1,5 @@
 from marshmallow import fields, ValidationError, validates
 from marshmallow import Schema
-from .models import Counterparty
 
 
 class CounterpartySchema(Schema):

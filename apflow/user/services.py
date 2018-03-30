@@ -4,9 +4,10 @@ from .models import User, Role
 from .schemas import UserSchema, RoleSchema
 
 class UserService(ModelService):
-    model = User
-    schema = UserSchema
-    route_view_name = 'user_view'
+    class Meta:
+        model = User
+        schema = UserSchema
+        route_view_name = 'user_view'
 
     def get_by_identity(self, identity):
         """ Finds user by username or email """
@@ -51,6 +52,7 @@ class UserService(ModelService):
 
 
 class RoleService(ModelService):
-    model = Role
-    schema = RoleSchema
-    route_view_name = 'role_view'
+    class Meta:
+        model = Role
+        schema = RoleSchema
+        route_view_name = 'role_view'

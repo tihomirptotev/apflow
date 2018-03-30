@@ -1,4 +1,4 @@
-import bcrypt
+from passlib.apps import custom_app_context
 from sqlalchemy import (
     Column,
     Integer,
@@ -29,19 +29,16 @@ class User(SurrogatePK, Base):
     def password(self):
         raise PermissionError
 
+
     @password.setter
     def password(self, pw):
         self.set_password(pw)
 
     def set_password(self, pw):
-        pwhash = bcrypt.hashpw(pw.encode('utf8'), bcrypt.gensalt())
-        self.password_hash = pwhash.decode('utf8')
+        self.password_hash = custom_app_context.hash(pw)
 
     def check_password(self, pw):
-        if self.password_hash is not None:
-            expected_hash = self.password_hash.encode('utf8')
-            return bcrypt.checkpw(pw.encode('utf8'), expected_hash)
-        return False
+        return custom_app_context.verify(pw, self.password_hash)
 
 
 class Role(SurrogatePK, Base):

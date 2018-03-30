@@ -2,12 +2,17 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import NoResultFound
 
 class ModelService:
-    model = None
-    schema = None
-    route_view_name = None
+
+    class Meta:
+        model = None
+        schema = None
+        route_view_name = None
 
     def __init__(self, request):
         self.request = request
+        self.model = getattr(self.Meta, 'model')
+        self.schema = getattr(self.Meta, 'schema')
+        self.route_view_name = getattr(self.Meta, 'route_view_name')
         self.user_id = 1
 
     def list_all(self):

@@ -48,4 +48,3 @@ class Role(SurrogatePK, Base):
     description = Column(Text)
     users = relationship('User', secondary=roles_users,
                          back_populates='roles')
-

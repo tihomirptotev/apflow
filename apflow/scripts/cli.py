@@ -16,7 +16,7 @@ from ..models import (
     get_session_factory,
     get_tm_session,
 )
-from ..models import Counterparty, CounterpartyNote
+from ..models import Counterparty, CounterpartyNote, User, Role
 
 
 @click.group()
@@ -62,17 +62,15 @@ def db(ctx):
 def init(ctx):
     '''Initialize database'''
     Base.metadata.create_all(ctx.obj['ENGINE'])
-    # with transaction.manager:
-    #     dbsession = get_tm_session(
-    #         ctx.obj['SESSION_FACTORY'], transaction.manager)
-
-    #     counterparty = Counterparty(name='Доставчик 1',
-    #                                 eik_egn='1234567809',
-    #                                 created_by=1,
-    #                                 updated_by=1,
-    #                                 id=2)
-    #     dbsession.add(counterparty)
-    # pass
+    with transaction.manager:
+        dbsession = get_tm_session(
+            ctx.obj['SESSION_FACTORY'], transaction.manager)
+        user = User(username='admin', email='admin@local.host',
+                    password='password')
+        role = Role(name='admins', description='admins description')
+        user.roles.append(role)
+        dbsession.add(user)
+        # dbsession.flush()
 
 
 @db.command()

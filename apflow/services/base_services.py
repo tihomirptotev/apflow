@@ -21,12 +21,7 @@ class ModelService:
 
     def get_by_id(self, id):
         session = self.request.dbsession
-        try:
-            return session.query(self.model).filter_by(id=id).one()
-        except NoResultFound:
-            return dict(
-                result='error',
-                message=f'Object with id: {id} does not exist.')
+        return session.query(self.model).filter_by(id=id).one()
 
     def find_by_col_name(self, col_name, value):
         session = self.request.dbsession
@@ -37,14 +32,9 @@ class ModelService:
         obj = self.model(**data)
         obj.created_by = self.user_id
         obj.updated_by = self.user_id
-        try:
-            self.request.dbsession.add(obj)
-            self.request.dbsession.flush()
-            return obj
-        except IntegrityError as e:
-            return dict(
-                result='error',
-                message='Object not created. Data does not meet the constrains.')
+        self.request.dbsession.add(obj)
+        self.request.dbsession.flush()
+        return obj
 
     def create_many(self, data_list):
         for data in data_list:
@@ -57,19 +47,16 @@ class ModelService:
 
     def update(self, id, data_dict):
         obj = self.get_by_id(id)
-        if isinstance(obj, self.model):
-            for k, v in data_dict.items():
-                setattr(obj, k, v)
-            self.request.dbsession.add(obj)
-            self.request.dbsession.flush()
+        for k, v in data_dict.items():
+            setattr(obj, k, v)
+        self.request.dbsession.add(obj)
+        self.request.dbsession.flush()
         return obj
 
     def delete(self, id):
         obj = self.get_by_id(id)
-        if isinstance(obj, self.model):
-            self.request.dbsession.delete(obj)
-            self.request.dbsession.flush()
-            return self.serialize_single(obj)
+        self.request.dbsession.delete(obj)
+        self.request.dbsession.flush()
         return obj
 
     def url_for_id(self, id):
@@ -87,4 +74,3 @@ class ModelService:
 
     def serialize_multiple(self, obj_list):
         return [self.serialize_single(obj) for obj in obj_list]
-

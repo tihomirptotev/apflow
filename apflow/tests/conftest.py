@@ -13,6 +13,7 @@ from apflow.models import (
 )
 from apflow.models.meta import Base
 import apflow.models
+from apflow.user.services import UserService, RoleService
 
 
 @pytest.fixture(scope='session')
@@ -43,7 +44,7 @@ def app(config):
     return webapp(appl)
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope='session')
 def engine(config):
     settings = config.get_settings()
     engine = get_engine(settings)
@@ -72,3 +73,12 @@ def webrequest(dbsession):
     request = testing.DummyRequest()
     request.dbsession = dbsession
     return request
+
+
+@pytest.fixture(scope='function')
+def admin_user(webrequest):
+    us = UserService(webrequest)
+    us.create(username='admin', email='admin@local.host', password='password')
+    rs = RoleService(webrequest)
+    rs.create(name='admins', description='admins')
+    return us.assign_role_to_user('admin', 'admins')

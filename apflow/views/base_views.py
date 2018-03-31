@@ -1,6 +1,12 @@
 import json
 from pyramid.view import view_config, view_defaults
-from pyramid.httpexceptions import HTTPNotFound, HTTPForbidden, HTTPClientError
+from pyramid.httpexceptions import (
+    HTTPNotFound,
+    HTTPForbidden,
+    HTTPClientError,
+    HTTPCreated,
+    HTTPAccepted,
+)
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.exc import IntegrityError
 
@@ -29,15 +35,14 @@ class BaseView:
         # import ipdb; ipdb.set_trace()
         res = self.service.deserialize_single(self.request.json_body)
         if res.errors:
-            msg = dict(result='error', data=res.errors, code=400)
-        obj = self.service.create(**res.data)
-        if isinstance(obj, self.model_class):
-            return self.service.serialize_single(obj)
+            self.request.response = HTTPClientError()
+            return dict(result='error', data=res.errors)
         else:
-            self.request.response.status = '400 Bad Request'
-            self.request.response.code = 400
-            self.request.response.content_type = 'application/json'
-            return dict(obj)
+            obj = self.service.create(**res.data)
+            self.request.response = HTTPCreated()
+            return dict(
+                result='ok',
+                data=self.service.serialize_single(obj))
 
     def view(self):
         return self.service.serialize_single(self.obj)
@@ -45,14 +50,23 @@ class BaseView:
     def update(self):
         res = self.service.deserialize_single(self.request.json_body)
         if res.errors:
-            return dict(result='error', data=res.errors, code=400)
-        # import ipdb; ipdb.set_trace()
-        obj = self.service.update(self.id, res.data)
-        return self.service.serialize_single(obj)
+            self.request.response = HTTPClientError()
+            return dict(result='error', data=res.errors)
+        else:
+            try:
+                obj = self.service.update(self.id, res.data)
+                self.request.response = HTTPAccepted()
+                return dict(
+                    result='ok',
+                    data=self.service.serialize_single(obj))
+            except:
+                raise HTTPNotFound
 
     def delete(self):
-        res = self.service.delete(self.id)
-        if res.get('result') == 'error':
-            return HTTPNotFound(detail=res)
-        else:
-            return dict(result='Record deleted.', data=res)
+        try:
+            obj = self.service.delete(self.id)
+            self.request.response = HTTPAccepted()
+            return dict(result='Record deleted.',
+                        data=self.service.serialize_single(obj))
+        except:
+            raise HTTPNotFound

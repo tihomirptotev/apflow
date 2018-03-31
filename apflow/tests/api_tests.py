@@ -1,9 +1,13 @@
 ################# Functional Api Tests #####################
+import json
+from subprocess import call
 import pytest
 from pyramid import testing
+import requests
 from webtest.app import AppError
 from apflow.counterparty.services import CounterpartyService
 from apflow.counterparty.models import Counterparty
+
 
 counterparty_data = [
     dict(name='Company 1', eik_egn='111222333'),
@@ -17,32 +21,61 @@ bad_data = [
 ]
 
 
-@pytest.mark.usefixtures('engine')
-def test_counterparty_add(app, webrequest):
-    # service = CounterpartyService(webrequest)
-    res = app.post_json('/counterparty/', counterparty_data[0])
-    assert res.status_code == 200
+@pytest.fixture(scope='session')
+def db():
+    call('apflow development.ini db init', shell=True)
+    yield
+    call('apflow development.ini db drop_all', shell=True)
 
 
-@pytest.mark.usefixtures('engine')
-def test_counterparty_update(app, webrequest):
-    # service = CounterpartyService(webrequest)
+@pytest.mark.usefixtures('db')
+@pytest.fixture
+def token():
+    r = requests.post('http://localhost:6543/login',
+                      json.dumps(dict(login='admin', password='password')))
+    token  = r.json()['token']
+    return token
+
+
+@pytest.mark.usefixtures('db')
+def test_login():
+    r = requests.post('http://localhost:6543/login',
+                      json.dumps(dict(login='admin', password='password')))
+    assert r.json()['result'] == 'ok'
+
+
+@pytest.mark.usefixtures('db')
+def test_counterparty_api(token):
+    headers = {'Authorization': f'JWT {token}'}
+    bad_headers = {'Authorization': f'JWT {token[1:]}'}
+    # Create new object
+    res = requests.post('http://localhost:6543/counterparty/',
+                        json.dumps(counterparty_data[0]),
+                        headers=headers)
+    assert res.status_code == 201
+    assert res.json()['result'] == 'ok'
+    # Create new object with bad token
+    res = requests.post('http://localhost:6543/counterparty/',
+                        json.dumps(counterparty_data[1]),
+                        headers=bad_headers)
+    assert res.status_code == 403
+
+    # Update object
     data = {
         "name": "Updated name",
         "eik_egn": "987456124"
     }
-    res = app.put_json('/counterparty/1', data)
-    res1 = app.get('/counterparty/1')
-    assert res1.status_code == 200
-    assert res1.json['name'] == data['name']
+    res = requests.put('http://localhost:6543/counterparty/1',
+                        json.dumps(data),
+                        headers=headers)
+    assert res.status_code == 202
+    assert res.json()['result'] == 'ok'
 
+    # Delete object
+    res = requests.delete('http://localhost:6543/counterparty/1',
+                          headers=headers)
+    assert res.status_code == 202
 
-@pytest.mark.usefixtures('engine')
-def test_counterparty_delete(app, webrequest):
-    res = app.post_json('/counterparty/', counterparty_data[0])
-    res = app.delete_json('/counterparty/1')
-    assert res.status_code == 200
-
-    with pytest.raises(AppError):
-        res = app.delete_json('/counterparty/100')
-    # assert res1.json['name'] == data['name']
+    res = requests.delete('http://localhost:6543/counterparty/2',
+                          headers=headers)
+    assert res.status_code == 404

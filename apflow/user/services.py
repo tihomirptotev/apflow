@@ -34,20 +34,14 @@ class UserService(ModelService):
             self.request.dbsession.flush()
             return user
 
-
-
-
-
-
     def authenticate(self, identity, password):
         user = self.get_by_identity(identity)
-        if isinstance(user, User):
-            if user.check_password(password):
-                return dict(
-                    userid=user.id,
-                    username=user.username,
-                    roles=[role.name for role in user.roles]
-                )
+        if isinstance(user, User) and user.check_password(password):
+            return dict(
+                userid=user.id,
+                username=user.username,
+                roles=[role.name for role in user.roles]
+            )
         return None
 
 

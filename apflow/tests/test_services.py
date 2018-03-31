@@ -2,6 +2,7 @@
 import pytest
 from pyramid import testing
 from sqlalchemy.orm.exc import NoResultFound
+from sqlalchemy.exc import IntegrityError
 from apflow.counterparty.services import CounterpartyService
 from apflow.counterparty.models import Counterparty
 
@@ -29,16 +30,12 @@ class TestCounterpartyService:
     def test_create(self, service):
         obj = service.create(**counterparty_data[0])
         assert isinstance(obj, Counterparty)
-        obj2 = service.create(**counterparty_data[0])
-        assert obj2['result'] == 'error'
+        with pytest.raises(IntegrityError):
+            service.create(**counterparty_data[0])
         with pytest.raises(AssertionError):
             service.create(**bad_data[0])
         with pytest.raises(AssertionError):
             service.create(**bad_data[1])
-        # assert isinstance(obj2, Counterparty)
-
-        # res = app.post_json('/counterparty/', dict(name='Company 2', eik_egn='123456719'))
-        # assert res == 'ok'
 
     def test_create_many(self, service):
         service.create_many(counterparty_data)
@@ -62,11 +59,12 @@ class TestCounterpartyService:
         service.update(1, dict(name='Updated name', eik_egn='999888777'))
         obj = service.find_by_col_name('name', 'Updated name').first()
         assert obj.id == 1
+        with pytest.raises(NoResultFound):
+            service.update(5, dict(name='Updated name', eik_egn='999888777'))
 
     def test_delete(self, service):
         service.create_many(counterparty_data)
-        res = service.delete(1)
-        assert 'id' in res.keys()
-        assert service.delete(1001)['result'] == 'error'
-
-
+        obj = service.delete(1)
+        assert obj.id == 1
+        with pytest.raises(NoResultFound):
+            service.delete(5)

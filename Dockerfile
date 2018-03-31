@@ -9,6 +9,6 @@ WORKDIR /apflow
 COPY . .
 RUN pip install -e '.[testing]'
 
-LABEL maintainer="Nick Janetakis <nick.janetakis@gmail.com>"
+LABEL maintainer="Tihomir Totev <tihomirptotev@gmail.com>"
 
 CMD gunicorn --paste development.ini -b 0.0.0.0:6543

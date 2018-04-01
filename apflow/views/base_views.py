@@ -35,8 +35,10 @@ class BaseView:
         # import ipdb; ipdb.set_trace()
         res = self.service.deserialize_single(self.request.json_body)
         if res.errors:
-            self.request.response = HTTPClientError()
+            self.request.response.status_code = 400
+            # self.request.response = HTTPClientError()
             return dict(result='error', data=res.errors)
+            # return {}
         else:
             obj = self.service.create(**res.data)
             self.request.response = HTTPCreated()
@@ -50,7 +52,7 @@ class BaseView:
     def update(self):
         res = self.service.deserialize_single(self.request.json_body)
         if res.errors:
-            self.request.response = HTTPClientError()
+            self.request.response.status_code = 400
             return dict(result='error', data=res.errors)
         else:
             try:

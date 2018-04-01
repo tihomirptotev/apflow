@@ -1,6 +1,6 @@
 GET http://localhost:6543/counterparty/
 Content-Type: application/json
-Authorization: JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6WyJhZG1pbiJdLCJ1c2VybmFtZSI6ImFkbWluIiwic3ViIjoxLCJpYXQiOjE1MjIyNzc2ODZ9.DoUmGxYCDEcJsd1eQPOcUj6XDunuqiRT9vG3bfNQAIKcy2tZwtSYDm0n2IK6GY3ATa9K7i-kXSUaSWf99BK9vA
+Authorization: JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6WyJhZG1pbnMiXSwidXNlcm5hbWUiOiJhZG1pbiIsInN1YiI6MSwiaWF0IjoxNTIyNTM3NDc3fQ.ZuX37v7kQWYc72EllRPzpIA12DyRa_e3E3q9n6i2K8w9cRmxguZAcvzJu3Ekrz_VCX2krWitgVgqJZmhU6Js7g
 ###
 
 GET http://localhost:6543/counterparty/101
@@ -8,10 +8,11 @@ GET http://localhost:6543/counterparty/101
 ###
 POST http://localhost:6543/counterparty/
 Content-Type: application/json
+Authorization: JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6WyJhZG1pbnMiXSwidXNlcm5hbWUiOiJhZG1pbiIsInN1YiI6MSwiaWF0IjoxNTIyNTM3NDc3fQ.ZuX37v7kQWYc72EllRPzpIA12DyRa_e3E3q9n6i2K8w9cRmxguZAcvzJu3Ekrz_VCX2krWitgVgqJZmhU6Js7g
 
 {
     "name": "Company 991",
-    "eik_egn": "888777a40"
+    "eik_egn": "888777"
 }
 
 ###
@@ -24,8 +25,9 @@ Content-Type: application/json
 }
 
 ###
-PUT http://localhost:6543/counterparty/4
+PUT http://localhost:6543/counterparty/1
 Content-Type: application/json
+Authorization: JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6WyJhZG1pbnMiXSwidXNlcm5hbWUiOiJhZG1pbiIsInN1YiI6MSwiaWF0IjoxNTIyNTM3NDc3fQ.ZuX37v7kQWYc72EllRPzpIA12DyRa_e3E3q9n6i2K8w9cRmxguZAcvzJu3Ekrz_VCX2krWitgVgqJZmhU6Js7g
 
 {
     "name": "Company 3000",
@@ -34,7 +36,7 @@ Content-Type: application/json
 
 ###
 
-DELETE http://localhost:6543/counterparty/8
+DELETE http://localhost:6543/counterparty/1
 
 
 ###

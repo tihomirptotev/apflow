@@ -54,6 +54,12 @@ def test_counterparty_api(token):
                         headers=headers)
     assert res.status_code == 201
     assert res.json()['result'] == 'ok'
+    # Create new object - bad data
+    res = requests.post('http://localhost:6543/counterparty/',
+                        json.dumps(bad_data[0]),
+                        headers=headers)
+    assert res.status_code == 400
+    assert res.json()['result'] == 'error'
     # Create new object with bad token
     res = requests.post('http://localhost:6543/counterparty/',
                         json.dumps(counterparty_data[1]),

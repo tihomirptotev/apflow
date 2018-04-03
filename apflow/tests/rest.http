@@ -12,7 +12,7 @@ Authorization: JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6WyJhZG1pbnMi
 
 {
     "name": "Company 991",
-    "eik_egn": "888777"
+    "eik_egn": "fy87771b8"
 }
 
 ###
@@ -21,11 +21,11 @@ Content-Type: application/json
 
 {
     "name": "Company 21",
-    "eik_egn": "888119780"
+    "eik_egn": "m88119780"
 }
 
 ###
-PUT http://localhost:6543/counterparty/1
+PUT http://localhost:6543/counterparty/5
 Content-Type: application/json
 Authorization: JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6WyJhZG1pbnMiXSwidXNlcm5hbWUiOiJhZG1pbiIsInN1YiI6MSwiaWF0IjoxNTIyNTM3NDc3fQ.ZuX37v7kQWYc72EllRPzpIA12DyRa_e3E3q9n6i2K8w9cRmxguZAcvzJu3Ekrz_VCX2krWitgVgqJZmhU6Js7g
 
@@ -36,7 +36,8 @@ Authorization: JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6WyJhZG1pbnMi
 
 ###
 
-DELETE http://localhost:6543/counterparty/1
+DELETE http://localhost:6543/counterparty/5
+Authorization: JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6WyJhZG1pbnMiXSwidXNlcm5hbWUiOiJhZG1pbiIsInN1YiI6MSwiaWF0IjoxNTIyNTM3NDc3fQ.ZuX37v7kQWYc72EllRPzpIA12DyRa_e3E3q9n6i2K8w9cRmxguZAcvzJu3Ekrz_VCX2krWitgVgqJZmhU6Js7g
 
 
 ###

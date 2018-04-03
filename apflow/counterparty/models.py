@@ -12,11 +12,10 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import relationship, backref, validates
 from sqlalchemy.schema import CheckConstraint
-from apflow.models.meta import Base
-from apflow.models.mixins import SurrogatePK, AuditMixin
+from apflow.models.mixins import BaseModel
 
 
-class Counterparty(AuditMixin, Base):
+class Counterparty(BaseModel):
     # __versioned__ = {}
     __tablename__ = 'counterparties'
 
@@ -30,7 +29,7 @@ class Counterparty(AuditMixin, Base):
 
 
 
-class CounterpartyNote(AuditMixin, Base):
+class CounterpartyNote(BaseModel):
     __tablename__ = 'counterparty_notes'
     note = Column(UnicodeText(500), index=True)
     counterparty_id = Column(Integer(), ForeignKey('counterparties.id'))
@@ -38,9 +37,9 @@ class CounterpartyNote(AuditMixin, Base):
                                 backref=backref('notes'))
 
 
-class CounterpartyAccount(AuditMixin, Base):
+class CounterpartyAccount(BaseModel):
     __tablename__ = 'counterparty_iban'
-    iban = Column(String(22), index=True)
+    iban = Column(String(22), index=True, unique=True)
     counterparty_id = Column(Integer(), ForeignKey('counterparties.id'))
     counterparty = relationship('Counterparty',
                                 backref=backref('accounts'))

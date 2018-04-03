@@ -1,6 +1,7 @@
 {
   "apflow/counterparty/models.py": true,
   "apflow/tests/api_tests.py::test_counterparty_add": true,
+  "apflow/tests/api_tests.py::test_counterparty_api": true,
   "apflow/tests/api_tests.py::test_counterparty_delete": true,
   "apflow/tests/api_tests.py::test_counterparty_update": true,
   "apflow/tests/tests.py::test_create_counterparty": true,

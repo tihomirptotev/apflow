@@ -1,6 +1,8 @@
 import arrow
 from sqlalchemy import Column, Integer
 from sqlalchemy_utils import ArrowType
+from apflow.models.meta import Base
+import transaction
 
 
 class SurrogatePK:
@@ -28,3 +30,23 @@ class AuditMixin(SurrogatePK):
     updated_on = Column(ArrowType, default=arrow.utcnow, onupdate=arrow.utcnow)
     created_by = Column(Integer, nullable=False)
     updated_by = Column(Integer, nullable=False)
+
+
+class CRUDMixin:
+
+    @classmethod
+    def get_by_id(cls, dbsession, id):
+        """Get record by ID."""
+        return dbsession.query(cls).filter_by(id=id).one()
+
+    @classmethod
+    def find_by_col_name(cls, dbsession, col_name, value):
+        """Find record by column name."""
+        col = getattr(cls, col_name)
+        return dbsession.query(cls).filter(col==value)
+
+
+
+class BaseModel(AuditMixin, CRUDMixin, Base):
+
+    __abstract__ = True

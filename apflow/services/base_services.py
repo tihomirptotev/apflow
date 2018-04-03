@@ -5,13 +5,11 @@ class ModelService:
 
     class Meta:
         model = None
-        schema = None
         route_view_name = None
 
     def __init__(self, request):
         self.request = request
         self.model = getattr(self.Meta, 'model')
-        self.schema = getattr(self.Meta, 'schema')
         self.route_view_name = getattr(self.Meta, 'route_view_name')
         self.user_id = 1
 
@@ -62,15 +60,14 @@ class ModelService:
     def url_for_id(self, id):
         return self.request.route_url(self.route_view_name, id=id)
 
-    def serialize_single(self, obj):
-        res = self.schema.dump(obj).data
+    def serialize_single(self, obj, schema):
+        res = schema.dump(obj).data
         res['url'] = self.url_for_id(obj.id)
         return res
 
-    def deserialize_single(self, json_data):
-        res = self.schema.load(json_data)
+    def deserialize_single(self, json_data, schema):
+        res = schema.load(json_data)
         return res
 
-
-    def serialize_multiple(self, obj_list):
-        return [self.serialize_single(obj) for obj in obj_list]
+    def serialize_multiple(self, obj_list, schema):
+        return [self.serialize_single(obj, schema) for obj in obj_list]

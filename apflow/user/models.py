@@ -8,7 +8,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import relationship, backref
 from apflow.models.meta import Base
-from apflow.models.mixins import SurrogatePK
+from apflow.models.mixins import BaseModel
 
 
 roles_users = Table('roles_users', Base.metadata,
@@ -16,7 +16,7 @@ roles_users = Table('roles_users', Base.metadata,
                           Column('role_id', Integer, ForeignKey('roles.id'))
                           )
 
-class User(SurrogatePK, Base):
+class User(BaseModel):
     __tablename__ = 'users'
 
     username = Column(Text, nullable=False, unique=True, index=True)
@@ -24,11 +24,12 @@ class User(SurrogatePK, Base):
     password_hash = Column(Text)
     roles = relationship('Role', secondary=roles_users,
                          back_populates='users')
+    created_by = Column(Integer, nullable=True)
+    updated_by = Column(Integer, nullable=True)
 
     @property
     def password(self):
         raise PermissionError
-
 
     @password.setter
     def password(self, pw):
@@ -41,10 +42,12 @@ class User(SurrogatePK, Base):
         return custom_app_context.verify(pw, self.password_hash)
 
 
-class Role(SurrogatePK, Base):
+class Role(BaseModel):
 
     __tablename__ = 'roles'
     name = Column(Text, unique=True, index=True)
     description = Column(Text)
     users = relationship('User', secondary=roles_users,
                          back_populates='roles')
+    created_by = Column(Integer, nullable=True)
+    updated_by = Column(Integer, nullable=True)

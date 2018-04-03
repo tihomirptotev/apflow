@@ -7,8 +7,7 @@ class UserSchema(Schema):
     password= fields.String(required=True, load_only=True)
 
 
+
 class RoleSchema(Schema):
     name = fields.String(required=True)
     description = fields.String(required=True)
-
-

@@ -5,7 +5,6 @@ import pytest
 from pyramid import testing
 import requests
 from webtest.app import AppError
-from apflow.counterparty.services import CounterpartyService
 from apflow.counterparty.models import Counterparty
 
 

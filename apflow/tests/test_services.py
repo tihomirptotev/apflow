@@ -3,13 +3,12 @@ import pytest
 from pyramid import testing
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.exc import IntegrityError
-from apflow.counterparty.services import CounterpartyService
 from apflow.counterparty.models import Counterparty
 
 
-@pytest.fixture
-def service(webrequest):
-    return CounterpartyService(webrequest)
+# @pytest.fixture
+# def service(webrequest):
+#     return CounterpartyService(webrequest)
 
 
 counterparty_data = [

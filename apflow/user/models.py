@@ -6,6 +6,8 @@ from sqlalchemy import (
     ForeignKey,
     Table
 )
+from sqlalchemy import or_
+from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.orm import relationship, backref
 from apflow.models.meta import Base
 from apflow.models.mixins import BaseModel
@@ -40,6 +42,31 @@ class User(BaseModel):
 
     def check_password(self, pw):
         return custom_app_context.verify(pw, self.password_hash)
+
+    @staticmethod
+    def get_by_identity(identity, dbsession):
+        """ Finds user by username or email """
+        try:
+            user = dbsession.query(User).filter(
+                or_(User.username==identity, User.email==identity)
+            ).first()
+            return user
+        except NoResultFound:
+                return None
+
+    @staticmethod
+    def authenticate(identity, password, dbsession):
+        """ Authenticates the user. """
+        user = User.get_by_identity(identity, dbsession)
+        if user and user.check_password(password):
+            return dict(
+                userid=user.id,
+                username=user.username,
+                email=user.email,
+                roles=[role.name for role in user.roles]
+            )
+        return None
+
 
 
 class Role(BaseModel):

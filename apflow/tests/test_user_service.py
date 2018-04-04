@@ -3,7 +3,6 @@ from passlib.apps import custom_app_context
 import pytest
 from pyramid import testing
 from sqlalchemy.orm.exc import NoResultFound
-from apflow.user.services import UserService, RoleService
 from apflow.user.models import User, Role
 
 

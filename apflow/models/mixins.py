@@ -1,5 +1,5 @@
 import arrow
-from sqlalchemy import Column, Integer
+from sqlalchemy import Column, Integer, Boolean
 from sqlalchemy_utils import ArrowType
 from apflow.models.meta import Base
 import transaction
@@ -30,9 +30,23 @@ class AuditMixin(SurrogatePK):
     updated_on = Column(ArrowType, default=arrow.utcnow, onupdate=arrow.utcnow)
     created_by = Column(Integer, nullable=False)
     updated_by = Column(Integer, nullable=False)
+    # Column for soft delete
+    deleted = Column(Boolean(name='deleted_bool'), default=False, nullable=False)
 
 
 class CRUDMixin:
+
+    def save(self, dbsession):
+        dbsession.add(self)
+        dbsession.flush()
+        return self
+
+    def delete_soft(self, dbsession):
+        """ Soft delete object - sets deleted column to True """
+        self.deleted = True
+        dbsession.add(self)
+        dbsession.flush()
+
 
     @classmethod
     def get_by_id(cls, dbsession, id):
@@ -43,8 +57,7 @@ class CRUDMixin:
     def find_by_col_name(cls, dbsession, col_name, value):
         """Find record by column name."""
         col = getattr(cls, col_name)
-        return dbsession.query(cls).filter(col==value)
-
+        return dbsession.query(cls).filter(col==value).first()
 
 
 class BaseModel(AuditMixin, CRUDMixin, Base):

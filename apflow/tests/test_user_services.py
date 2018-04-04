@@ -2,7 +2,6 @@
 import pytest
 from pyramid import testing
 from sqlalchemy.orm.exc import NoResultFound
-from apflow.user.services import UserService, RoleService
 from apflow.user.models import User
 
 
@@ -81,5 +80,3 @@ class TestUserService:
     #     res = service.delete(1)
     #     assert 'id' in res.keys()
     #     assert service.delete(1001)['result'] == 'error'
-
-

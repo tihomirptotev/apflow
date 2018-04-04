@@ -13,7 +13,6 @@ from apflow.models import (
 )
 from apflow.models.meta import Base
 import apflow.models
-from apflow.user.services import UserService, RoleService
 
 
 @pytest.fixture(scope='session')

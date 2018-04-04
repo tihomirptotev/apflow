@@ -24,7 +24,7 @@ class BaseApi:
         self.user_id = self.request.authenticated_userid
         self.model = getattr(self.Meta, 'model_class')
         self.schema = getattr(self.Meta, 'schema')
-        self.schema.request = self.request
+        self.schema.dbsession = self.request.dbsession
         self.detail_route_name = getattr(self.Meta, 'detail_route_name')
         if self.request.matchdict:
             try:
@@ -58,9 +58,10 @@ class BaseApi:
                 obj = self.model(**res.data)
                 obj.created_by = self.request.authenticated_userid
                 obj.updated_by = self.request.authenticated_userid
-                self.request.dbsession.add(obj)
-                self.request.dbsession.flush()
-                self.request.response = HTTPCreated()
+                obj.save(self.request.dbsession)
+                # self.request.dbsession.add(obj)
+                # self.request.dbsession.flush()
+                self.request.response.status_code = 201
                 return dict(
                     result='ok',
                     data=self.serialize(obj))
@@ -81,14 +82,17 @@ class BaseApi:
             for k, v in res.data.items():
                 setattr(self.obj, k, v)
             self.obj.updated_by = self.request.authenticated_userid
-            self.request.dbsession.add(self.obj)
-            self.request.dbsession.flush()
-            self.request.response = HTTPAccepted()
+            self.obj.save(self.request.dbsession)
+            # self.request.dbsession.add(self.obj)
+            # self.request.dbsession.flush()
+            self.request.response.status_code = 202
             return dict(
                 result='ok',
                 data=self.serialize(self.obj))
 
-    def delete(self):
-        self.request.dbsession.delete(self.obj)
+    def delete_soft(self):
+        if self.obj.deleted:
+            raise HTTPNotFound
+        self.obj.soft_delete(self.request.dbsession)
         self.request.response = HTTPAccepted()
-        return dict(result='Record deleted.', data=self.obj.id)
+        return dict(result='Record deleted.', data=dict(id=self.obj.id))

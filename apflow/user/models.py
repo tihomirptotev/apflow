@@ -4,7 +4,8 @@ from sqlalchemy import (
     Integer,
     Text,
     ForeignKey,
-    Table
+    Table,
+    Boolean
 )
 from sqlalchemy import or_
 from sqlalchemy.orm.exc import NoResultFound
@@ -28,6 +29,8 @@ class User(BaseModel):
                          back_populates='users')
     created_by = Column(Integer, nullable=True)
     updated_by = Column(Integer, nullable=True)
+    employee = relationship('Employee', uselist=False, back_populates='user')
+    active = Column(Boolean(name='active_bool'), default=True, nullable=False)
 
     @property
     def password(self):
@@ -68,7 +71,6 @@ class User(BaseModel):
         return None
 
 
-
 class Role(BaseModel):
 
     __tablename__ = 'roles'
@@ -76,5 +78,5 @@ class Role(BaseModel):
     description = Column(Text)
     users = relationship('User', secondary=roles_users,
                          back_populates='roles')
-    created_by = Column(Integer, nullable=True)
-    updated_by = Column(Integer, nullable=True)
+    # created_by = Column(Integer, nullable=True)
+    # updated_by = Column(Integer, nullable=True)

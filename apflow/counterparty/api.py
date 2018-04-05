@@ -14,5 +14,6 @@ class CounterpartyApi(BaseApi):
 
     class Meta:
         model_class = Counterparty
-        schema = CounterpartySchema(only=('id', 'name', 'eik_egn'))
+        # schema = CounterpartySchema(only=('id', 'name', 'eik_egn'))
+        schema = CounterpartySchema()
         detail_route_name = 'counterparty_view'

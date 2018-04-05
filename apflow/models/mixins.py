@@ -41,12 +41,16 @@ class CRUDMixin:
         dbsession.flush()
         return self
 
+    def update(self, **data):
+        for k, v in data.items():
+            setattr(self, k, v)
+        return self
+
     def delete_soft(self, dbsession):
         """ Soft delete object - sets deleted column to True """
         self.deleted = True
         dbsession.add(self)
         dbsession.flush()
-
 
     @classmethod
     def get_by_id(cls, dbsession, id):

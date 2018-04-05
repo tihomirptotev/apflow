@@ -1,3 +1,4 @@
+from marshmallow.exceptions import ValidationError
 from pyramid.response import Response
 from pyramid.view import view_config, view_defaults
 from pyramid.httpexceptions import HTTPNotFound
@@ -26,24 +27,17 @@ class UserApi(BaseApi):
     def signup(self):
         schema = UserSchema(only=('username', 'email', 'password'))
         schema.dbsession = self.request.dbsession
-        res = schema.load(self.request.json_body)
-        if res.errors:
+        try:
+            data = schema.load(self.request.json_body)
+            user = self.model(**data)
+            user.save(self.request.dbsession)
+            self.request.response.status_code = 201
+            return dict(
+                result='ok',
+                data=self.serialize(user))
+        except ValidationError as err:
             self.request.response.status_code = 422
-            return dict(result='error', data=res.errors)
-        else:
-            try:
-                user = self.model(**res.data)
-                user.save(self.request.dbsession)
-                # self.request.dbsession.add(obj)
-                # self.request.dbsession.flush()
-                self.request.response.status_code = 201
-                return dict(
-                    result='ok',
-                    data=self.serialize(user))
-            except IntegrityError:
-                self.request.response.status_code = 422
-                return dict(result='error', data='Wrong input!')
-        pass
+            return dict(result='error', data=err.messages)
 
     @view_config(route_name='login', request_method='POST')
     def login(self):

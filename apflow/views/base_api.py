@@ -9,6 +9,7 @@ from pyramid.httpexceptions import (
 )
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.exc import IntegrityError
+from marshmallow.exceptions import ValidationError
 
 
 class BaseApi:
@@ -24,7 +25,10 @@ class BaseApi:
         self.user_id = self.request.authenticated_userid
         self.model = getattr(self.Meta, 'model_class')
         self.schema = getattr(self.Meta, 'schema')
-        self.schema.dbsession = self.request.dbsession
+        self.schema.context = {
+            'request': self.request,
+            'detail_route_name': getattr(self.Meta, 'detail_route_name')
+        }
         self.detail_route_name = getattr(self.Meta, 'detail_route_name')
         if self.request.matchdict:
             try:
@@ -36,10 +40,8 @@ class BaseApi:
 
     def serialize(self, obj):
         """Serialize record with marshmallow."""
-        res = self.schema.dump(obj)
-        res.data['url'] = self.request.route_url(
-            self.detail_route_name, id=obj.id)
-        return res.data
+        return self.schema.dump(obj)
+
 
     def list_all(self):
         res = self.request.dbsession.query(self.model)
@@ -48,47 +50,41 @@ class BaseApi:
             data=[self.serialize(obj) for obj in res])
 
     def add(self):
-        res = self.schema.load(self.request.json_body)
-        if res.errors:
+        # import ipdb; ipdb.set_trace()
+        try :
+            data = self.schema.load(self.request.json_body)
+            obj = self.model(**data)
+            obj.created_by = self.request.authenticated_userid
+            obj.updated_by = self.request.authenticated_userid
+            obj.save(self.request.dbsession)
+            self.request.response.status_code = 201
+            return dict(
+                result='ok',
+                data=self.serialize(obj))
+        # except IntegrityError:
+        #     self.request.response.status_code = 422
+        #     return dict(result='error', data='Wrong input!')
+        except ValidationError as err:
             self.request.response.status_code = 422
-            return dict(result='error', data=res.errors)
-        else:
-            try:
-                # import ipdb; ipdb.set_trace()
-                obj = self.model(**res.data)
-                obj.created_by = self.request.authenticated_userid
-                obj.updated_by = self.request.authenticated_userid
-                obj.save(self.request.dbsession)
-                # self.request.dbsession.add(obj)
-                # self.request.dbsession.flush()
-                self.request.response.status_code = 201
-                return dict(
-                    result='ok',
-                    data=self.serialize(obj))
-            except IntegrityError:
-                self.request.response.status_code = 422
-                return dict(result='error', data='Wrong input!')
+            return dict(result='error', data=err.messages)
 
 
     def view(self):
         return self.serialize(self.obj)
 
     def update(self):
-        res = self.schema.load(self.request.json_body)
-        if res.errors:
-            self.request.response.status_code = 422
-            return dict(result='error', data=res.errors)
-        else:
-            for k, v in res.data.items():
-                setattr(self.obj, k, v)
+        try:
+            data = self.schema.load(self.request.json_body)
+            self.obj.update(**data)
             self.obj.updated_by = self.request.authenticated_userid
             self.obj.save(self.request.dbsession)
-            # self.request.dbsession.add(self.obj)
-            # self.request.dbsession.flush()
             self.request.response.status_code = 202
             return dict(
                 result='ok',
                 data=self.serialize(self.obj))
+        except ValidationError as err:
+            self.request.response.status_code = 422
+            return dict(result='error', data=err.messages)
 
     def delete_soft(self):
         if self.obj.deleted:

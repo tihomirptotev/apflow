@@ -1,30 +1,23 @@
 from marshmallow import fields, ValidationError, validates
-from marshmallow import Schema
-from .models import Counterparty
+from marshmallow import Schema, post_load
 from sqlalchemy.orm.exc import NoResultFound
+from apflow.schemas.base_schema import BaseAuditSchema, BaseSchema
+from .models import Counterparty
 
 
-class CounterpartySchema(Schema):
-
-    # def __init__(self, *args, **kwargs):
-    #     super().__init__(*args, **kwargs)
-    #     self.request = None
+class CounterpartySchema(BaseAuditSchema):
 
     name = fields.String(required=True)
     eik_egn = fields.String(required=True)
-    url = fields.Url(dump_only=True)
-    dbsession = None
 
     @validates('eik_egn')
     def validates_eik_egn(self, value):
-        if len(value) < 9:
-            raise ValidationError('Length must be at least 9 characters.')
-        if len(value) > 13:
-            raise ValidationError('Length must be less than 14 characters.')
+        if not (9 <= len(value) <= 13):
+            raise ValidationError('Length must be between 9 and 13 characters.')
 
         try:
             obj = Counterparty.find_by_col_name(
-                self.dbsession, 'eik_egn', value)
+                self.context['request'].dbsession, 'eik_egn', value)
             if obj:
                 raise ValidationError(
                     f'Counterparty with eik_egn: {value} already exsts.')

@@ -1,36 +1,40 @@
-from marshmallow import Schema, fields, ValidationError, validates
+from marshmallow import Schema, fields, ValidationError, validates, validate
 from sqlalchemy.orm.exc import NoResultFound
+from apflow.schemas.base_schema import BaseSchema
 from .models import User
 
 
-class UserSchema(Schema):
-    username = fields.String(required=True)
+
+class UserSchema(BaseSchema):
+    class Meta:
+        fields = ('id', 'username', 'email')
+
+
+class UserSignupSchema(Schema):
+    username = fields.String(required=True,
+                             validate=validate.Length(min=3, max=255))
     email = fields.Email(required=True)
-    password= fields.String(required=True, load_only=True)
-    url = fields.Url(dump_only=True)
-    dbsession = None
+    password= fields.String(required=True,
+                            validate=validate.Length(min=8, max=128))
 
     @validates('username')
-    def validates_username(self, value):
-        try:
-            obj = self.dbsession.query(User).filter(
-                User.username==value).first()
-            if obj:
-                raise ValidationError(
-                    f'User with username: {value} already exsts.')
-        except NoResultFound:
-            pass
+    def ensure_unique_username(self, value):
+        user = User.get_by_identity(value, self.context['dbsession'])
+        if user:
+            raise ValidationError(f'{value} already exists.')
 
     @validates('email')
-    def validates_email(self, value):
-        try:
-            obj = self.dbsession.query(User).filter(
-                User.email == value).first()
-            if obj:
-                raise ValidationError(
-                    f'User with email: {value} already exsts.')
-        except NoResultFound:
-            pass
+    def ensure_unique_email(self, value):
+        user = User.get_by_identity(value, self.context['dbsession'])
+        if user:
+            raise ValidationError(f'{value} already exists.')
+
+
+class UserSigninSchema(Schema):
+    identity = fields.String(required=True,
+                             validate=validate.Length(min=3, max=255))
+    password = fields.String(required=True,
+                             validate=validate.Length(min=8, max=128))
 
 
 class RoleSchema(Schema):

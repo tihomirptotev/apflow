@@ -46,7 +46,7 @@ POST http://localhost:6543/user/login
 Content-Type: application/json
 
 {
-    "login": "admin",
+    "identity": "admin",
     "password": "password"
 }
 
@@ -55,11 +55,12 @@ POST http://localhost:6543/user/signup
 Content-Type: application/json
 
 {
-    "username": "admin3",
-    "email": "admin3@local.host",
+    "username": "admin4",
+    "email": "admin4@local.host",
     "password": "password"
 }
 
 ###
-Content-Type: application/json
 http://localhost:6543/user/3
+Content-Type: application/json
+Authorization: JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6WyJhZG1pbnMiXSwidXNlcm5hbWUiOiJhZG1pbiIsInN1YiI6MSwiaWF0IjoxNTIyNTM3NDc3fQ.ZuX37v7kQWYc72EllRPzpIA12DyRa_e3E3q9n6i2K8w9cRmxguZAcvzJu3Ekrz_VCX2krWitgVgqJZmhU6Js7g

@@ -8,7 +8,7 @@ from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.exc import IntegrityError
 from apflow.views.base_api import BaseApi
 from .models import User, Role
-from .schemas import UserSchema
+from .schemas import UserSignupSchema, UserSigninSchema, UserSchema
 
 
 @view_defaults(renderer='json')
@@ -20,13 +20,13 @@ class UserApi(BaseApi):
 
     class Meta:
         model_class = User
-        schema = UserSchema(only=('id', 'username', 'email'))
+        schema = UserSchema()
         detail_route_name = 'user_view'
 
     @view_config(route_name='signup', request_method='POST')
     def signup(self):
-        schema = UserSchema(only=('username', 'email', 'password'))
-        schema.dbsession = self.request.dbsession
+        schema = UserSignupSchema()
+        schema.context = {'dbsession': self.request.dbsession}
         try:
             data = schema.load(self.request.json_body)
             user = self.model(**data)
@@ -41,22 +41,30 @@ class UserApi(BaseApi):
 
     @view_config(route_name='login', request_method='POST')
     def login(self):
-        login = self.request.json_body['login']
-        password = self.request.json_body['password']
-        user = User.authenticate(login, password, self.request.dbsession)
-        if user:
-            return {
-                'result': 'ok',
-                'token': self.request.create_jwt_token(
-                    user['userid'],
-                    roles=user['roles'],
-                    username=user['username'])
-            }
-        else:
-            return {
-                'result': 'error',
-                'token': None
-            }
+        schema = UserSigninSchema()
+        schema.context = {'dbsession': self.request.dbsession}
+        try:
+            data = schema.load(self.request.json_body)
+            user = User.authenticate(data['identity'],
+                                     data['password'],
+                                     self.request.dbsession)
+            if user:
+                return {
+                    'result': 'ok',
+                    'token': self.request.create_jwt_token(
+                        user['userid'],
+                        roles=user['roles'],
+                        username=user['username'])
+                }
+            else:
+                return {
+                    'result': 'error',
+                    'token': None
+                }
+        except ValidationError as err:
+            self.request.response.status_code = 422
+            return dict(result='error', data=err.messages)
+
 
     def logout(self):
         pass

@@ -87,4 +87,4 @@ class TestCompanyUserRelationship:
         query = query.join(Employee).join(User).join(User.roles).filter(
             CompanyUnit.id == 1)
         res = query.all()
-        assert len(res) == 2
+        assert len(res) == 1

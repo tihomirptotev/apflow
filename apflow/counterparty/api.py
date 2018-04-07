@@ -12,8 +12,11 @@ class CounterpartyApi(BaseApi):
             (Allow, 'admins', 'crud')
         ]
 
-    class Meta:
-        model_class = Counterparty
-        # schema = CounterpartySchema(only=('id', 'name', 'eik_egn'))
-        schema = CounterpartySchema()
-        detail_route_name = 'counterparty_view'
+    def __init__(self, context, request):
+        super().__init__(request)
+        self.context = context
+        self.schema = CounterpartySchema()
+        self.schema.context = {
+            'request': self.request,
+            'detail_route_name': 'counterparty_view'
+        }

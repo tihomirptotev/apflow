@@ -1,3 +1,4 @@
+import functools
 from sqlalchemy import (
     Column,
     Index,
@@ -12,6 +13,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import relationship, backref, validates
 from sqlalchemy.schema import CheckConstraint
+from apflow.views.base_api import model_factory
 from apflow.models.mixins import BaseModel
 
 
@@ -45,3 +47,10 @@ class CounterpartyAccount(BaseModel):
     counterparty_id = Column(Integer(), ForeignKey('counterparties.id'))
     iban = Column(String(22), index=True, unique=True)
     active = Column(Boolean(name='active_bool'), default=True, nullable=False)
+
+
+counterparty_factory = functools.partial(model_factory, model=Counterparty)
+counterparty_note_factory = functools.partial(model_factory,
+                                              model=CounterpartyNote)
+counterparty_account_factory = functools.partial(model_factory,
+                                                 model=CounterpartyAccount)

@@ -1,6 +1,8 @@
 def includeme(config):
-    config.add_route('counterparty', '/')
-    config.add_route('counterparty_view', '/{id}')
+    config.add_route('counterparty', '/',
+                     factory='.models.counterparty_factory')
+    config.add_route('counterparty_view',
+                     '/{id}', factory='.models.counterparty_factory')
     config.add_view('apflow.counterparty.api.CounterpartyApi',
                     route_name='counterparty',
                     request_method='GET',

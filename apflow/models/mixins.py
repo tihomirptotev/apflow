@@ -63,6 +63,10 @@ class CRUDMixin:
         col = getattr(cls, col_name)
         return dbsession.query(cls).filter(col==value).first()
 
+    def serialize(self, schema):
+        """ Serializes object with provided marshmallow schema. """
+        return schema.dump(self)
+
 
 class BaseModel(AuditMixin, CRUDMixin, Base):
 

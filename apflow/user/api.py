@@ -18,10 +18,14 @@ class UserApi(BaseApi):
         (Allow, 'admins', 'crud')
     ]
 
-    class Meta:
-        model_class = User
-        schema = UserSchema()
-        detail_route_name = 'user_view'
+    def __init__(self, context, request):
+        super().__init__(request)
+        self.context = context
+        self.schema = UserSchema()
+        self.schema.context = {
+            'request': self.request,
+            'detail_route_name': 'user_view'
+        }
 
     @view_config(route_name='signup', request_method='POST')
     def signup(self):
@@ -29,12 +33,12 @@ class UserApi(BaseApi):
         schema.context = {'dbsession': self.request.dbsession}
         try:
             data = schema.load(self.request.json_body)
-            user = self.model(**data)
+            user = self.context(**data)
             user.save(self.request.dbsession)
             self.request.response.status_code = 201
             return dict(
                 result='ok',
-                data=self.serialize(user))
+                data=user.serialize(self.schema))
         except ValidationError as err:
             self.request.response.status_code = 422
             return dict(result='error', data=err.messages)

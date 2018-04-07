@@ -1,3 +1,4 @@
+import functools
 from passlib.apps import custom_app_context
 from sqlalchemy import (
     Column,
@@ -12,6 +13,7 @@ from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.orm import relationship, backref
 from apflow.models.meta import Base
 from apflow.models.mixins import BaseModel
+from apflow.views.base_api import model_factory
 
 
 roles_users = Table('roles_users', Base.metadata,
@@ -80,3 +82,6 @@ class Role(BaseModel):
                          back_populates='roles')
     # created_by = Column(Integer, nullable=True)
     # updated_by = Column(Integer, nullable=True)
+
+
+user_factory = functools.partial(model_factory, model=User)

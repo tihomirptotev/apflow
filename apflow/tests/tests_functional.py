@@ -80,3 +80,11 @@ class TestCompanyUserRelationship:
 
         office = dbsession.query(CompanyUnit).get(3)
         assert office.children == []
+
+
+        query = dbsession.query(
+            CompanyUnit.name, Employee.name, User.username, Role.name)
+        query = query.join(Employee).join(User).join(User.roles).filter(
+            CompanyUnit.id == 1)
+        res = query.all()
+        assert len(res) == 2

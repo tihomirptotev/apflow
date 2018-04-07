@@ -21,5 +21,6 @@ coverage
 test
 production.ini
 *.sqlite
+*.sqlite-journal
 *.ipynb
 .pytest_cache/

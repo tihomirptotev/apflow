@@ -8,9 +8,10 @@ from pyramid.security import ALL_PERMISSIONS, Allow, Deny, Everyone, DENY_ALL, A
 @view_defaults(renderer='json')
 class CounterpartyApi(BaseApi):
 
-    __acl__ = [
-            (Allow, 'admins', 'crud')
-        ]
+    # __acl__ = [
+    #         # (Allow, 'admins', ALL_PERMISSIONS)
+    #         (Allow, Everyone, ALL_PERMISSIONS)
+    #     ]
 
     def __init__(self, context, request):
         super().__init__(request)

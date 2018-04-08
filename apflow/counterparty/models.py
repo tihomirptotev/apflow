@@ -13,13 +13,23 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import relationship, backref, validates
 from sqlalchemy.schema import CheckConstraint
+from pyramid.httpexceptions import HTTPNotFound
+from pyramid.security import ALL_PERMISSIONS, Allow, Deny, Everyone, DENY_ALL, Authenticated
 from apflow.views.base_api import model_factory
 from apflow.models.mixins import BaseModel
+
 
 
 class Counterparty(BaseModel):
     # __versioned__ = {}
     __tablename__ = 'counterparties'
+
+    def __acl__(self=None):
+        if self and (self.id == 2):
+            return [(Allow, Everyone, ALL_PERMISSIONS)]
+        else:
+            return [(Allow, 'admins', ALL_PERMISSIONS)]
+        # return [(Allow, 'admins', ALL_PERMISSIONS)]
 
     name = Column(Unicode(length=50), index=True, nullable=False)
     eik_egn = Column(Unicode(13), index=True, unique=True, nullable=False)
@@ -47,10 +57,3 @@ class CounterpartyAccount(BaseModel):
     counterparty_id = Column(Integer(), ForeignKey('counterparties.id'))
     iban = Column(String(22), index=True, unique=True)
     active = Column(Boolean(name='active_bool'), default=True, nullable=False)
-
-
-counterparty_factory = functools.partial(model_factory, model=Counterparty)
-counterparty_note_factory = functools.partial(model_factory,
-                                              model=CounterpartyNote)
-counterparty_account_factory = functools.partial(model_factory,
-                                                 model=CounterpartyAccount)

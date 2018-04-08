@@ -14,34 +14,11 @@ from marshmallow.exceptions import ValidationError
 
 class BaseApi:
 
-    # class Meta:
-    #     model_class = None
-    #     schema = None
-    #     detail_route_name = None
-
-
     def __init__(self, request):
         self.request = request
         self.user_id = self.request.authenticated_userid
         self.context = None
         self.schema = None
-        # self.schema.context = {
-        #     'request': self.request,
-        #     'detail_route_name': getattr(self.Meta, 'detail_route_name')
-        # }
-        # self.detail_route_name = getattr(self.Meta, 'detail_route_name')
-        # if self.request.matchdict:
-        #     try:
-        #         self.id = self.request.matchdict['id']
-        #         self.obj = self.model.get_by_id(
-        #             self.request.dbsession, self.id)
-        #     except NoResultFound:
-        #         raise HTTPNotFound
-
-    # def serialize(self, obj):
-    #     """Serialize record with marshmallow."""
-    #     return self.schema.dump(obj)
-
 
     def list_all(self):
         res = self.request.dbsession.query(self.context)
@@ -100,7 +77,7 @@ def model_factory(request, model):
     if obj_id is None:
         # Return the class
         return model
-    obj = request.dbSession.query(model).filter_by(id=int(obj_id)).first()
+    obj = request.dbsession.query(model).filter_by(id=int(obj_id)).first()
     if not obj:
         raise HTTPNotFound()
     return obj

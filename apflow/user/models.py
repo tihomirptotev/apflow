@@ -80,8 +80,8 @@ class Role(BaseModel):
     description = Column(Text)
     users = relationship('User', secondary=roles_users,
                          back_populates='roles')
-    # created_by = Column(Integer, nullable=True)
-    # updated_by = Column(Integer, nullable=True)
+    created_by = Column(Integer, nullable=True)
+    updated_by = Column(Integer, nullable=True)
 
 
 user_factory = functools.partial(model_factory, model=User)

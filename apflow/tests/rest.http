@@ -1,6 +1,6 @@
 GET http://localhost:6543/counterparty/
 Content-Type: application/json
-Authorization: JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6WyJhZG1pbnMiXSwidXNlcm5hbWUiOiJhZG1pbiIsInN1YiI6MSwiaWF0IjoxNTIyNTM3NDc3fQ.ZuX37v7kQWYc72EllRPzpIA12DyRa_e3E3q9n6i2K8w9cRmxguZAcvzJu3Ekrz_VCX2krWitgVgqJZmhU6Js7g
+Authorization: JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6WyJhZG1pbnMiXSwidXNlcm5hbWUiOiJhZG1pbiIsInN1YiI6MSwiaWF0IjoxNTIzMTQ0MDMxfQ.V2wbKVh_xxJU1J4jtOHp7Mby0bB3JW6UfDpCCWHZD1EBesKQURtiSGwEEGwS83RRwMQcBjRFu0wTDYdg9Kqh_w
 ###
 
 GET http://localhost:6543/counterparty/
@@ -9,11 +9,11 @@ Content-Type: application/json
 ###
 POST http://localhost:6543/counterparty/
 Content-Type: application/json
-Authorization: JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6WyJhZG1pbnMiXSwidXNlcm5hbWUiOiJhZG1pbiIsInN1YiI6MSwiaWF0IjoxNTIyNTM3NDc3fQ.ZuX37v7kQWYc72EllRPzpIA12DyRa_e3E3q9n6i2K8w9cRmxguZAcvzJu3Ekrz_VCX2krWitgVgqJZmhU6Js7g
+Authorization: JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6WyJhZG1pbnMiXSwidXNlcm5hbWUiOiJhZG1pbiIsInN1YiI6MSwiaWF0IjoxNTIzMTQyNTM5fQ.xO2xpK0qpk5k_3hGN1FWedI3kz_vyLPd8KYBLR7l23nlIm-Yd5m85CgblwXsFTdD1fP7wHjri0hUUhOK695wFw
 
 {
     "name": "Company 991",
-    "eik_egn": "fyp87771b8"
+    "eik_egn": "f08p87771b8"
 }
 
 ###
@@ -55,11 +55,19 @@ POST http://localhost:6543/user/signup
 Content-Type: application/json
 
 {
-    "username": "admin4",
-    "email": "admin4@local.host",
+    "username": "user",
+    "email": "user4@local.host",
     "password": "password"
 }
 
+###
+POST http://localhost:6543/user/login
+Content-Type: application/json
+
+{
+    "identity": "user",
+    "password": "password"
+}
 ###
 http://localhost:6543/user/3
 Content-Type: application/json

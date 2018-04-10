@@ -10,6 +10,8 @@ from apflow.models import (
     get_engine,
     get_session_factory,
     get_tm_session,
+    User,
+    Role
 )
 from apflow.models.meta import Base
 import apflow.models
@@ -43,7 +45,7 @@ def app(config):
     return webapp(appl)
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(autouse=True)
 def engine(config):
     settings = config.get_settings()
     engine = get_engine(settings)
@@ -59,7 +61,7 @@ def engine(config):
 
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture()
 def dbsession(engine):
     session_factory = get_session_factory(engine)
     session = get_tm_session(session_factory, transaction.manager)
@@ -67,17 +69,20 @@ def dbsession(engine):
     session.rollback()
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture()
 def webrequest(dbsession):
     request = testing.DummyRequest()
     request.dbsession = dbsession
     return request
 
 
-@pytest.fixture(scope='function')
-def admin_user(webrequest):
-    us = UserService(webrequest)
-    us.create(username='admin', email='admin@local.host', password='password')
-    rs = RoleService(webrequest)
-    rs.create(name='admins', description='admins')
-    return us.assign_role_to_user('admin', 'admins')
+@pytest.fixture(autouse=True)
+def admin_user(dbsession):
+    with transaction.manager:
+        user = User(username='admin', email='admin@local.host',
+                    password='password')
+        role = Role(name='admins', description='admins description')
+        user.roles.append(role)
+        dbsession.add(user)
+        dbsession.flush()
+    return user

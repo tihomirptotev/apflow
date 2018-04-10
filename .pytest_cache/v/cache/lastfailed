@@ -1,10 +1,8 @@
 {
   "apflow/counterparty/models.py": true,
   "apflow/tests/api_tests.py::test_counterparty_add": true,
-  "apflow/tests/api_tests.py::test_counterparty_api": true,
   "apflow/tests/api_tests.py::test_counterparty_delete": true,
   "apflow/tests/api_tests.py::test_counterparty_update": true,
-  "apflow/tests/api_tests.py::test_login": true,
   "apflow/tests/test_services.py::TestCounterpartyService::()::test_create": true,
   "apflow/tests/test_services.py::TestCounterpartyService::()::test_create_many": true,
   "apflow/tests/test_services.py::TestCounterpartyService::()::test_delete": true,

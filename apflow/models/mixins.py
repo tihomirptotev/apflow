@@ -31,7 +31,7 @@ class AuditMixin(SurrogatePK):
     created_by = Column(Integer, nullable=False)
     updated_by = Column(Integer, nullable=False)
     # Column for soft delete
-    deleted = Column(Boolean(name='deleted_bool'), default=False, nullable=False)
+    deleted = Column(Boolean(name='deleted_bool'), default=False)
 
 
 class CRUDMixin:

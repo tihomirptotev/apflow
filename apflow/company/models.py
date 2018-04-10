@@ -45,5 +45,5 @@ class Employee(BaseModel):
     name = Column(Unicode(length=128), index=True, nullable=False)
     company_unit_id = Column(Integer(), ForeignKey('company_units.id'))
     user_id = Column(Integer, ForeignKey('users.id'))
-    user = relationship('User', back_populates='employee')
+    user = relationship('User', uselist=False, back_populates='employee')
     # info = Column(Unicode(length=512))

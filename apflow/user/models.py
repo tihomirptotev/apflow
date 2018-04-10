@@ -1,4 +1,5 @@
 import functools
+import arrow
 from passlib.apps import custom_app_context
 from sqlalchemy import (
     Column,
@@ -11,6 +12,7 @@ from sqlalchemy import (
 from sqlalchemy import or_
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.orm import relationship, backref
+from sqlalchemy_utils import ArrowType
 from apflow.models.meta import Base
 from apflow.models.mixins import BaseModel
 from apflow.views.base_api import model_factory
@@ -18,7 +20,12 @@ from apflow.views.base_api import model_factory
 
 roles_users = Table('roles_users', Base.metadata,
                           Column('user_id', Integer, ForeignKey('users.id')),
-                          Column('role_id', Integer, ForeignKey('roles.id'))
+                          Column('role_id', Integer, ForeignKey('roles.id')),
+                          Column('created_by', Integer, default=1),
+                          Column('updated_by', Integer, default=1),
+                          Column('created_on', ArrowType, default=arrow.utcnow),
+                          Column('updated_on', ArrowType,
+                                 default=arrow.utcnow, onupdate=arrow.utcnow)
                           )
 
 class User(BaseModel):
@@ -31,8 +38,8 @@ class User(BaseModel):
                          back_populates='users')
     created_by = Column(Integer, nullable=True)
     updated_by = Column(Integer, nullable=True)
-    employee = relationship('Employee', uselist=False, back_populates='user')
-    active = Column(Boolean(name='active_bool'), default=True, nullable=False)
+    employee = relationship('Employee', back_populates='user')
+    active = Column(Boolean(name='active_bool'), default=True)
 
     @property
     def password(self):

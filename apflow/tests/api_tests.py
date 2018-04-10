@@ -20,67 +20,66 @@ bad_data = [
 ]
 
 
-@pytest.fixture(scope='session')
-def db():
-    call('apflow development.ini db init', shell=True)
-    yield
-    call('apflow development.ini db drop_all', shell=True)
+# @pytest.fixture(scope='session')
+# def db():
+#     call('apflow testing.ini db init', shell=True)
+#     yield
+#     call('apflow testing.ini db drop_all', shell=True)
 
 
-@pytest.mark.usefixtures('db')
 @pytest.fixture
-def token():
-    r = requests.post('http://localhost:6543/login',
-                      json.dumps(dict(login='admin', password='password')))
-    token  = r.json()['token']
+def token(app):
+    r = app.post_json('/user/login',
+                      dict(identity='admin', password='password'))
+    token  = r.json['token']
     return token
 
 
-@pytest.mark.usefixtures('db')
-def test_login():
-    r = requests.post('http://localhost:6543/login',
-                      json.dumps(dict(login='admin', password='password')))
-    assert r.json()['result'] == 'ok'
+def test_login(app):
+    r = app.post_json('/user/login',
+                      dict(identity='admin', password='password'))
+    assert r.json['result'] == 'ok'
 
 
-@pytest.mark.usefixtures('db')
-def test_counterparty_api(token):
+def test_counterparty_api(token, app):
     headers = {'Authorization': f'JWT {token}'}
     bad_headers = {'Authorization': f'JWT {token[1:]}'}
     # Create new object
-    res = requests.post('http://localhost:6543/counterparty/',
-                        json.dumps(counterparty_data[0]),
+    res = app.post_json('/counterparty/',
+                        counterparty_data[0],
                         headers=headers)
     assert res.status_code == 201
-    assert res.json()['result'] == 'ok'
+    assert res.json['result'] == 'ok'
+
     # Create new object - bad data
-    res = requests.post('http://localhost:6543/counterparty/',
-                        json.dumps(bad_data[0]),
-                        headers=headers)
-    assert res.status_code == 400
-    assert res.json()['result'] == 'error'
-    # Create new object with bad token
-    res = requests.post('http://localhost:6543/counterparty/',
-                        json.dumps(counterparty_data[1]),
-                        headers=bad_headers)
+    res = app.post_json('/counterparty/',
+                        bad_data[0],
+                        headers=headers, expect_errors=True)
+    assert res.status_code == 422
+
+    # # Create new object with bad token
+    res = app.post_json('/counterparty/',
+                        counterparty_data[1],
+                        headers=bad_headers,
+                        expect_errors=True)
     assert res.status_code == 403
 
-    # Update object
+    # # Update object
     data = {
         "name": "Updated name",
         "eik_egn": "987456124"
     }
-    res = requests.put('http://localhost:6543/counterparty/1',
-                        json.dumps(data),
+    res = app.put_json('/counterparty/1',
+                        data,
                         headers=headers)
     assert res.status_code == 202
-    assert res.json()['result'] == 'ok'
+    assert res.json['result'] == 'ok'
 
-    # Delete object
-    res = requests.delete('http://localhost:6543/counterparty/1',
+    # # Delete object
+    res = app.delete_json('/counterparty/1',
                           headers=headers)
     assert res.status_code == 202
 
-    res = requests.delete('http://localhost:6543/counterparty/2',
-                          headers=headers)
+    res = app.delete_json('/counterparty/2',
+                          headers=headers, expect_errors=True)
     assert res.status_code == 404

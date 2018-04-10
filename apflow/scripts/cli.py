@@ -2,6 +2,7 @@ import os
 import sys
 import transaction
 import click
+import openpyxl
 
 from pyramid.paster import (
     get_appsettings,
@@ -16,7 +17,14 @@ from ..models import (
     get_session_factory,
     get_tm_session,
 )
-from ..models import Counterparty, CounterpartyNote, User, Role
+from ..models import (
+    Counterparty,
+    CounterpartyNote,
+    User,
+    Role,
+    Employee,
+    CompanyUnit,
+)
 
 
 @click.group()
@@ -71,6 +79,48 @@ def init(ctx):
         user.roles.append(role)
         dbsession.add(user)
         # dbsession.flush()
+
+@db.command()
+@click.pass_context
+def init_sample_data(ctx):
+    '''Initialize database with samlpe data'''
+    Base.metadata.create_all(ctx.obj['ENGINE'])
+    wb = openpyxl.load_workbook('apflow/tests/data/test_data.xlsx')
+
+    with transaction.manager:
+        dbsession = get_tm_session(
+            ctx.obj['SESSION_FACTORY'], transaction.manager)
+        user = User(username='admin', email='admin@local.host',
+                    password='password')
+        role = Role(name='admins', description='admins description')
+        user.roles.append(role)
+        dbsession.add(user)
+        dbsession.flush()
+
+        for model_name in (Role, User, CompanyUnit, Employee):
+            sheetname = model_name.__tablename__
+            ws = wb[sheetname]
+            data = [tuple(cell.value for cell in row) for row in ws.rows]
+            columns = data[0]
+            data_as_dict = [dict(zip(columns, row)) for row in data[1:]]
+            for item in data_as_dict:
+                obj = model_name(**item)
+                if model_name == User:
+                    obj.password = 'password'
+                dbsession.add(obj)
+            dbsession.flush()
+
+        ws = wb['roles_users']
+        data = [tuple(cell.value for cell in row) for row in ws.rows][1:]
+        for row in data:
+            user = User.get_by_id(dbsession, row[0])
+            role = Role.get_by_id(dbsession, row[1])
+            user.roles.append(role)
+            # import ipdb; ipdb.set_trace()
+            dbsession.add(user)
+        dbsession.flush()
+
+
 
 
 @db.command()

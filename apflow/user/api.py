@@ -33,8 +33,9 @@ class UserApi(BaseApi):
         schema.context = {'dbsession': self.request.dbsession}
         try:
             data = schema.load(self.request.json_body)
-            user = self.context(**data)
-            user.save(self.request.dbsession)
+            user = User(**data)
+            # import ipdb; ipdb.set_trace()
+            user = user.save(self.request.dbsession)
             self.request.response.status_code = 201
             return dict(
                 result='ok',

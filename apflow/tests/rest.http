@@ -1,4 +1,4 @@
-GET http://localhost:6543/counterparty/notes/1
+GET http://localhost:6543/counterparty/notes/3
 Content-Type: application/json
 Authorization: JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6WyJhZG1pbnMiXSwidXNlcm5hbWUiOiJhZG1pbiIsInN1YiI6MSwiaWF0IjoxNTIzMTQ0MDMxfQ.V2wbKVh_xxJU1J4jtOHp7Mby0bB3JW6UfDpCCWHZD1EBesKQURtiSGwEEGwS83RRwMQcBjRFu0wTDYdg9Kqh_w
 ###
@@ -55,8 +55,8 @@ POST http://localhost:6543/user/signup
 Content-Type: application/json
 
 {
-    "username": "user",
-    "email": "user4@local.host",
+    "username": "user999",
+    "email": "user999@local.host",
     "password": "password"
 }
 

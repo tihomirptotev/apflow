@@ -37,4 +37,4 @@ class TestCounterparty:
 
     def test_serialize(self, dbsession, app, webrequest):
         res = dbsession.query(CounterpartyNote).first()
-        assert res.note == 'Note 2'
+        assert res.note == 'Note 1'

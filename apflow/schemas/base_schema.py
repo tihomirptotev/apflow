@@ -5,11 +5,11 @@ from marshmallow import Schema
 class BaseSchema(Schema):
 
     def __init__(self, *args, **kwargs):
-        request = kwargs.pop('request', None)
-        detail_route_name = kwargs.pop('detail_route_name', None)
+        self.request = kwargs.pop('request', None)
+        self.detail_route_name = kwargs.pop('detail_route_name', None)
         super().__init__(*args, **kwargs)
-        self.request = request
-        self.detail_route_name = detail_route_name
+        # self.request = request
+        # self.detail_route_name = detail_route_name
 
     url = fields.Method('self_url')
 

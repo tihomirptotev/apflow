@@ -16,7 +16,6 @@
   "apflow/tests/tests.py::test_create_counterparty": true,
   "apflow/tests/tests.py::test_create_user": true,
   "apflow/tests/tests.py::test_invalid_conterparty": true,
-  "apflow/tests/tests_functional.py::TestCounterparty::()::test_serialize": true,
   "setup.py": true,
   "tests/tests.py::TestApp": true,
   "tests/tests.py::test_counterparty_list": true

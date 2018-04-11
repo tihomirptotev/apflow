@@ -11,7 +11,7 @@ from apflow.models import (
     get_session_factory,
     get_tm_session,
     User,
-    Role
+    Role,
 )
 from apflow.models.meta import Base
 import apflow.models
@@ -37,14 +37,6 @@ def config():
     testing.tearDown()
 
 
-@pytest.fixture(scope='session')
-def app(config):
-    from apflow import main
-    settings = config.get_settings()
-    appl = main({}, **settings)
-    return webapp(appl)
-
-
 @pytest.fixture(autouse=True)
 def engine(config):
     settings = config.get_settings()
@@ -52,6 +44,15 @@ def engine(config):
     Base.metadata.create_all(engine)
     yield engine
     Base.metadata.drop_all(engine)
+
+
+@pytest.fixture(scope='session')
+def app(config):
+    from apflow import main
+    settings = config.get_settings()
+    appl = main({}, **settings)
+    return webapp(appl)
+
 
 # @pytest.fixture(scope='session')
 # def dbtables(engine):
@@ -86,3 +87,35 @@ def admin_user(dbsession):
         dbsession.add(user)
         dbsession.flush()
     return user
+
+
+@pytest.fixture(autouse=True)
+def sample_data(dbsession):
+    import openpyxl
+    from apflow.models import (
+        Role, User, CompanyUnit, Employee, Counterparty, ApDocument,
+        CostAccount, ApDocCostDistribution)
+    wb = openpyxl.load_workbook('apflow/tests/data/test_data.xlsx')
+    for model_name in (Role, User, CompanyUnit, Employee, Counterparty):
+        sheetname = model_name.__tablename__
+        ws = wb[sheetname]
+        data = [tuple(cell.value for cell in row) for row in ws.rows]
+        columns = data[0]
+        data_as_dict = [dict(zip(columns, row)) for row in data[1:]]
+        for item in data_as_dict:
+            obj = model_name(**item)
+            if model_name == User:
+                obj.password = 'password'
+            dbsession.add(obj)
+        dbsession.flush()
+
+    ws = wb['roles_users']
+    data = [tuple(cell.value for cell in row) for row in ws.rows][1:]
+    for row in data:
+        user = User.get_by_id(dbsession, row[0])
+        role = Role.get_by_id(dbsession, row[1])
+        user.roles.append(role)
+        # import ipdb; ipdb.set_trace()
+        dbsession.add(user)
+    dbsession.flush()
+    yield

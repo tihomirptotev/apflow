@@ -9,10 +9,10 @@ from apflow.counterparty.models import Counterparty
 
 
 counterparty_data = [
-    dict(name='Company 1', eik_egn='111222333'),
-    dict(name='Company 2', eik_egn='223456712'),
-    dict(name='Company 3', eik_egn='323456712'),
-    dict(name='ЕООД 1234', eik_egn='444444712'),
+    dict(name='Company 10', eik_egn='911912333'),
+    dict(name='Company 11', eik_egn='923456712'),
+    dict(name='Company 12', eik_egn='923456712'),
+    dict(name='Company 13', eik_egn='944444712'),
 ]
 bad_data = [
     dict(name='Company less than 8', eik_egn='11122233'),
@@ -41,7 +41,7 @@ def test_login(app):
     assert r.json['result'] == 'ok'
 
 
-def test_counterparty_api(token, app):
+def test_counterparty_api(token, app, engine):
     headers = {'Authorization': f'JWT {token}'}
     bad_headers = {'Authorization': f'JWT {token[1:]}'}
     # Create new object
@@ -57,6 +57,16 @@ def test_counterparty_api(token, app):
                         headers=headers, expect_errors=True)
     assert res.status_code == 422
 
+
+    res = app.get('/counterparty/8',
+                          headers=headers)
+    assert res.status_code == 200
+
+    res = app.get('/counterparty/',
+                          headers=headers)
+    assert res.status_code == 200
+
+
     # # Create new object with bad token
     res = app.post_json('/counterparty/',
                         counterparty_data[1],
@@ -69,17 +79,17 @@ def test_counterparty_api(token, app):
         "name": "Updated name",
         "eik_egn": "987456124"
     }
-    res = app.put_json('/counterparty/1',
+    res = app.put_json('/counterparty/8',
                         data,
                         headers=headers)
     assert res.status_code == 202
     assert res.json['result'] == 'ok'
 
     # # Delete object
-    res = app.delete_json('/counterparty/1',
+    res = app.delete_json('/counterparty/8',
                           headers=headers)
     assert res.status_code == 202
 
-    res = app.delete_json('/counterparty/2',
-                          headers=headers, expect_errors=True)
-    assert res.status_code == 404
+    # res = app.delete_json('/counterparty/2',
+    #                       headers=headers, expect_errors=True)
+    # assert res.status_code == 404

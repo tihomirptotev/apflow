@@ -24,6 +24,8 @@ from ..models import (
     Role,
     Employee,
     CompanyUnit,
+    ApDocument,
+    ApDocCostDistribution,
 )
 
 
@@ -97,7 +99,7 @@ def init_sample_data(ctx):
         dbsession.add(user)
         dbsession.flush()
 
-        for model_name in (Role, User, CompanyUnit, Employee):
+        for model_name in (Role, User, CompanyUnit, Employee, Counterparty):
             sheetname = model_name.__tablename__
             ws = wb[sheetname]
             data = [tuple(cell.value for cell in row) for row in ws.rows]

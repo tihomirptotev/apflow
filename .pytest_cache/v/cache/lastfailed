@@ -3,6 +3,7 @@
   "apflow/tests/api_tests.py::test_counterparty_add": true,
   "apflow/tests/api_tests.py::test_counterparty_delete": true,
   "apflow/tests/api_tests.py::test_counterparty_update": true,
+  "apflow/tests/test_company_model.py::TestCompanyModel::()::test_create": true,
   "apflow/tests/test_services.py::TestCounterpartyService::()::test_create": true,
   "apflow/tests/test_services.py::TestCounterpartyService::()::test_create_many": true,
   "apflow/tests/test_services.py::TestCounterpartyService::()::test_delete": true,

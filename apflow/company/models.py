@@ -49,13 +49,14 @@ class Employee(BaseModel):
     user_id = Column(Integer, ForeignKey('users.id'))
     user = relationship('User', uselist=False, back_populates='employee')
     active = Column(Boolean(name='active_bool'), default=True, nullable=False)
-    # info = Column(Unicode(length=512))
+    info = Column(Unicode(length=512))
 
 
 class CostAccount(BaseModel):
     """ Accounts used for cost accounting """
 
     __tablename__ = 'cost_accounts'
+
     acc_number = Column(String(length=10), index=True,
                         unique=True, nullable=False)
     name = Column(Unicode(length=128), index=True, nullable=False)
@@ -66,6 +67,7 @@ class ApDocument(BaseModel):
     """ Account payable document """
 
     __tablename__ = 'ap_documents'
+
     counterparty_id = Column(Integer(), ForeignKey('counterparties.id'))
     doc_number = Column(String(length=20))
     doc_date = Column(Date, nullable=False)

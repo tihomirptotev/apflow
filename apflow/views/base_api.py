@@ -29,8 +29,8 @@ class BaseApi:
     def add(self):
         # import ipdb; ipdb.set_trace()
         try :
-            data = self.schema.load(self.request.json_body)
-            obj = self.context(**data)
+            obj = self.schema.load(
+                self.request.json_body, self.request.dbsession)
             obj.created_by = self.request.authenticated_userid
             obj.updated_by = self.request.authenticated_userid
             obj.save(self.request.dbsession)
@@ -51,10 +51,12 @@ class BaseApi:
 
     def update(self):
         try:
-            data = self.schema.load(self.request.json_body)
-            self.context.update(**data)
-            self.context.updated_by = self.request.authenticated_userid
-            self.context.save(self.request.dbsession)
+            obj = self.schema.load(self.request.json_body,
+                                    self.request.dbsession,
+                                    instance=self.context)
+            # self.context.update(**data)
+            obj.updated_by = self.request.authenticated_userid
+            obj.save(self.request.dbsession)
             self.request.response.status_code = 202
             return dict(
                 result='ok',

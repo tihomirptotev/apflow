@@ -99,7 +99,9 @@ def init_sample_data(ctx):
         dbsession.add(user)
         dbsession.flush()
 
-        for model_name in (Role, User, CompanyUnit, Employee, Counterparty):
+        models_list = [Role, User, CompanyUnit, Employee, Counterparty,
+                       CounterpartyNote]
+        for model_name in models_list:
             sheetname = model_name.__tablename__
             ws = wb[sheetname]
             data = [tuple(cell.value for cell in row) for row in ws.rows]

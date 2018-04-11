@@ -34,8 +34,7 @@ class Counterparty(BaseModel):
     name = Column(Unicode(length=50), index=True, nullable=False)
     eik_egn = Column(Unicode(13), index=True, unique=True, nullable=False)
     notes = relationship('CounterpartyNote',
-                         backref='counterparty',
-                         lazy='dynamic')
+                         backref='counterparty')
     accounts = relationship('CounterpartyAccount',
                             backref='counterparty',
                             lazy='dynamic')
@@ -51,12 +50,17 @@ class Counterparty(BaseModel):
 
 class CounterpartyNote(BaseModel):
     __tablename__ = 'counterparty_notes'
+
+    def __acl__(self=None):
+        return [(Allow, 'admins', ALL_PERMISSIONS)]
+
     counterparty_id = Column(Integer(), ForeignKey('counterparties.id'))
     note = Column(Unicode(500), index=True)
 
 
 class CounterpartyAccount(BaseModel):
     __tablename__ = 'counterparty_iban'
+
     counterparty_id = Column(Integer(), ForeignKey('counterparties.id'))
     iban = Column(String(22), index=True, unique=True)
     active = Column(Boolean(name='active_bool'), default=True, nullable=False)

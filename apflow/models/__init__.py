@@ -5,10 +5,24 @@ import zope.sqlalchemy
 
 # import or define all models here to ensure they are attached to the
 # Base.metadata prior to any initialization routines
-from apflow.counterparty.models import Counterparty, CounterpartyNote # flake8: noqa
-from apflow.company.models import CompanyUnit, Employee, ApDocument # flake8: noqa
-from apflow.company.models import CostAccount, ApDocCostDistribution # flake8: noqa
-from apflow.user.models import User, Role, roles_users
+from apflow.counterparty.models import (
+    Counterparty,
+    CounterpartyAccount,
+    CounterpartyNote,
+) # flake8: noqa
+from apflow.company.models import (
+    ApDocument,
+    ApDocCostDistribution,
+    CompanyUnit,
+    CostAccount,
+    Employee,
+) # flake8: noqa
+from apflow.user.models import (
+    User,
+    Role,
+    roles_users
+) # flake8: noqa
+
 # run configure_mappers after defining all of the models to ensure
 # all relationships can be setup
 configure_mappers()

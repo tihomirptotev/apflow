@@ -1,4 +1,4 @@
-GET http://localhost:6543/counterparty/1
+GET http://localhost:6543/counterparty/notes/1
 Content-Type: application/json
 Authorization: JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6WyJhZG1pbnMiXSwidXNlcm5hbWUiOiJhZG1pbiIsInN1YiI6MSwiaWF0IjoxNTIzMTQ0MDMxfQ.V2wbKVh_xxJU1J4jtOHp7Mby0bB3JW6UfDpCCWHZD1EBesKQURtiSGwEEGwS83RRwMQcBjRFu0wTDYdg9Kqh_w
 ###
@@ -32,7 +32,7 @@ Authorization: JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6WyJhZG1pbnMi
 
 {
     "name": "Company 3000",
-    "eik_egn": "188456798"
+    "eik_egn": "8456798a9"
 }
 
 ###

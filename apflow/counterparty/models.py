@@ -25,19 +25,22 @@ class Counterparty(BaseModel):
     __tablename__ = 'counterparties'
 
     def __acl__(self=None):
-        if self and (self.id == 2):
-            return [(Allow, Everyone, ALL_PERMISSIONS)]
-        else:
-            return [(Allow, 'admins', ALL_PERMISSIONS)]
-        # return [(Allow, 'admins', ALL_PERMISSIONS)]
+        # if self and (self.id == 2):
+        #     return [(Allow, Everyone, ALL_PERMISSIONS)]
+        # else:
+        #     return [(Allow, 'admins', ALL_PERMISSIONS)]
+        return [(Allow, 'admins', ALL_PERMISSIONS)]
 
     name = Column(Unicode(length=50), index=True, nullable=False)
     eik_egn = Column(Unicode(13), index=True, unique=True, nullable=False)
     notes = relationship('CounterpartyNote',
-                         backref=backref('counterparty'),
+                         backref='counterparty',
                          lazy='dynamic')
     accounts = relationship('CounterpartyAccount',
-                            backref=backref('counterparty'),
+                            backref='counterparty',
+                            lazy='dynamic')
+    apdocs = relationship('ApDocument',
+                            backref='counterparty',
                             lazy='dynamic')
 
     @validates('eik_egn')

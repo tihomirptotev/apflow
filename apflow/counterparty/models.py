@@ -49,7 +49,7 @@ class Counterparty(BaseModel):
 class CounterpartyNote(BaseModel):
     __tablename__ = 'counterparty_notes'
     counterparty_id = Column(Integer(), ForeignKey('counterparties.id'))
-    note = Column(UnicodeText(500), index=True)
+    note = Column(Unicode(500), index=True)
 
 
 class CounterpartyAccount(BaseModel):

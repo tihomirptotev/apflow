@@ -16,6 +16,7 @@ requires = [
     'marshmallow',
     'passlib',
     'plaster_pastedeploy',
+    'psycopg2',
     'pyramid >= 1.9',
     'pyramid_debugtoolbar',
     'pyramid_jinja2',

@@ -20,7 +20,7 @@ import apflow.models
 @pytest.fixture(scope='session')
 def config():
     test_settings = {
-        'sqlalchemy.url': 'sqlite:///apflow_testdb.sqlite',
+        'sqlalchemy.url': 'postgresql://apflow:devpassword@localhost:5432/apflow_testing',
         'auth.secret': 'sekret',
     }
     config = testing.setUp(settings=test_settings)

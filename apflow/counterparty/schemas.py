@@ -8,6 +8,14 @@ from .models import Counterparty, CounterpartyNote
 
 class CounterpartyNoteSchema(ModelSchema, BaseAuditSchema):
 
+    url = fields.Method('self_url')
+
+    def self_url(self, obj):
+        return self.request.route_url(
+            self.detail_route_name,
+            id=obj.counterparty_id,
+            note_id=obj.id)
+
     class Meta:
         model = CounterpartyNote
         fields = ('id', 'note', 'url')

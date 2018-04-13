@@ -101,7 +101,8 @@ def init_sample_data(ctx):
         dbsession.flush()
 
         models_list = [Role, User, CompanyUnit, Employee, Counterparty,
-                       CounterpartyNote, CostAccount, ApDocument]
+                       CounterpartyNote, CostAccount, ApDocument,
+                       ApDocCostDistribution]
         for model_name in models_list:
             sheetname = model_name.__tablename__
             ws = wb[sheetname]

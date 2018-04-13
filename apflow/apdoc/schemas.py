@@ -13,17 +13,21 @@ class ApDocCostDistributionSchema(ModelSchema, BaseAuditSchema):
     url = fields.Method('self_url', dump_omly=True)
     account = fields.Method('self_account', dump_only=True)
     unit = fields.Method('self_unit', dump_only=True)
+    amount = fields.Float()
 
     def self_url(self, obj):
         return self.request.route_url(
             self.detail_route_name,
-            id=obj.id)
+            id=obj.apdoc_id,
+            cd_id=obj.id)
 
     def self_account(self, obj):
-        return self.request.dbsesion(CostAccount).get(obj.cost_account_id).name
+        return self.request.dbsession.query(
+            CostAccount).get(obj.cost_account_id).name
 
     def self_unit(self, obj):
-        return self.request.dbsesion(CompanyUnit).get(obj.company_unit_id).name
+        return self.request.dbsession.query(
+            CompanyUnit).get(obj.company_unit_id).name
 
     class Meta:
         model = ApDocCostDistribution
@@ -40,7 +44,7 @@ def apdoc_schema_factory(request):
 
         class Meta:
             model = ApDocument
-            fields = ('counterparty_id', 'doc_number', 'doc_date', 'doc_sum',
+            fields = ('counterparty_id', 'init_unit_id', 'doc_number', 'doc_date', 'doc_sum',
                       'doc_info', 'doc_info_additional', 'doc_type', 'level',
                       'status', 'cd_entries', 'url')
 

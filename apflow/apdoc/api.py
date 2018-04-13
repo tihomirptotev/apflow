@@ -18,7 +18,7 @@ class ApDocApi(BaseApi):
         self.context = context
         self.schema_cd = ApDocCostDistributionSchema(
             request=self.request, detail_route_name='apdoc_cd_view')
-        self.schema = apdoc_schema_factory(request)
+        self.schema = apdoc_schema_factory(self.request)
 
 #     @view_config(route_name='counterparty_notes',
 #                  request_method='GET', permission='read')

@@ -48,6 +48,7 @@ class ApDocument(BaseModel):
         return [(Allow, 'admins', ALL_PERMISSIONS)]
 
     counterparty_id = Column(Integer(), ForeignKey('counterparties.id'))
+    init_unit_id = Column(Integer(), ForeignKey('company_units.id'))
     doc_number = Column(String(length=20))
     doc_date = Column(Date, nullable=False)
     doc_sum = Column(Float)

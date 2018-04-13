@@ -21,8 +21,7 @@ def counterparty_note_factory(request):
     obj = request.dbsession.query(
         CounterpartyNote).filter_by(
             id=int(note_id),
-            counterparty_id=int(counterparty_id),
-            deleted=False).first()
+            counterparty_id=int(counterparty_id)).first()
     if not obj:
         raise HTTPNotFound()
     return obj

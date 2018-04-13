@@ -1,6 +1,7 @@
 import datetime
 import pytest
-from apflow.company.models import CompanyUnit, ApDocument
+from apflow.company.models import CompanyUnit
+from apflow.apdoc.models import ApDocument
 from apflow.counterparty.models import Counterparty
 
 

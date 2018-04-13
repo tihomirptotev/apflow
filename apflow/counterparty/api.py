@@ -21,12 +21,18 @@ class CounterpartyApi(BaseApi):
             request=self.request, detail_route_name='counterparty_note_view')
         self.schema = counterparty_schema_factory(request)
 
+    @view_config(route_name='counterparty_view', request_method='GET',
+                 permission='read')
+    def view(self):
+        return self.context.serialize(self.schema)
+
+
+
+
     @view_config(route_name='counterparty_notes',
                  request_method='GET', permission='read')
     def list_notes_for_counterparty(self):
         notes = self.context.notes
-        notes = [note for note in notes if note.deleted==False]
-        # import ipdb; ipdb.set_trace()
         return dict(
             result='ok',
             data=[obj.serialize(self.schema_notes) for obj in notes])
@@ -49,8 +55,6 @@ class CounterpartyApi(BaseApi):
         except ValidationError as err:
             self.request.response.status_code = 422
             return dict(result='error', data=err.messages)
-
-
 
 
 @view_defaults(renderer='json')

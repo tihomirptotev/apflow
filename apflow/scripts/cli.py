@@ -26,6 +26,7 @@ from ..models import (
     CompanyUnit,
     ApDocument,
     ApDocCostDistribution,
+    CostAccount,
 )
 
 
@@ -100,7 +101,7 @@ def init_sample_data(ctx):
         dbsession.flush()
 
         models_list = [Role, User, CompanyUnit, Employee, Counterparty,
-                       CounterpartyNote]
+                       CounterpartyNote, CostAccount, ApDocument]
         for model_name in models_list:
             sheetname = model_name.__tablename__
             ws = wb[sheetname]

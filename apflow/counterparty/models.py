@@ -34,7 +34,8 @@ class Counterparty(BaseModel):
     name = Column(Unicode(length=50), index=True, nullable=False)
     eik_egn = Column(Unicode(13), index=True, unique=True, nullable=False)
     notes = relationship('CounterpartyNote',
-                         backref='counterparty')
+                         backref='counterparty',
+                         lazy='dynamic')
     accounts = relationship('CounterpartyAccount',
                             backref='counterparty',
                             lazy='dynamic')

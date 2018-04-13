@@ -65,11 +65,8 @@ class BaseApi:
             self.request.response.status_code = 422
             return dict(result='error', data=err.messages)
 
-    # def delete_soft(self):
     def delete(self):
-        if self.context.deleted:
-            raise HTTPNotFound()
-        self.context.delete_soft(self.request.dbsession)
+        self.context.delete(self.request.dbsession)
         self.request.response = HTTPAccepted()
         return dict(result='Record deleted.', data=dict(id=self.context.id))
 

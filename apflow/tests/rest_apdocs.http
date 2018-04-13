@@ -1,7 +1,30 @@
-GET http://localhost:6543/counterparty/
+GET http://localhost:6543/apdocs/
 Content-Type: application/json
-Authorization: JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6WyJhZG1pbnMiXSwidXNlcm5hbWUiOiJhZG1pbiIsInN1YiI6MSwiaWF0IjoxNTIzMTQ0MDMxfQ.V2wbKVh_xxJU1J4jtOHp7Mby0bB3JW6UfDpCCWHZD1EBesKQURtiSGwEEGwS83RRwMQcBjRFu0wTDYdg9Kqh_w
+Authorization: JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6WyJhZG1pbnMiXSwidXNlcm5hbWUiOiJhZG1pbiIsInN1YiI6MSwiaWF0IjoxNTIzNjA1NjgwfQ.RubhUgNoz0NKu1lIaBckjF97mjQWyHTVEy01p3jOiSPFyf_zJq2nsxiQCe6CVk8Hc4xLNI4JxdcOyGpjDrAetg
+
 ###
+GET http://localhost:6543/apdocs/1
+Content-Type: application/json
+Authorization: JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6WyJhZG1pbnMiXSwidXNlcm5hbWUiOiJhZG1pbiIsInN1YiI6MSwiaWF0IjoxNTIzNjA1NjgwfQ.RubhUgNoz0NKu1lIaBckjF97mjQWyHTVEy01p3jOiSPFyf_zJq2nsxiQCe6CVk8Hc4xLNI4JxdcOyGpjDrAetg
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 POST http://localhost:6543/counterparty/1/notes
 Content-Type: application/json

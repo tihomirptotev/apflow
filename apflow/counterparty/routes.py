@@ -19,12 +19,6 @@ def includeme(config):
 
     config.add_view('apflow.counterparty.api.CounterpartyApi',
                     route_name='counterparty_view',
-                    request_method='GET',
-                    permission='read',
-                    attr='view')
-
-    config.add_view('apflow.counterparty.api.CounterpartyApi',
-                    route_name='counterparty_view',
                     request_method='PUT',
                     permission='crud',
                     attr='update')

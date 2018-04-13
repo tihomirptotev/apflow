@@ -11,12 +11,14 @@ from apflow.counterparty.models import (
     CounterpartyNote,
 ) # flake8: noqa
 from apflow.company.models import (
+    CompanyUnit,
+    Employee
+) # flake8: noqa
+from apflow.apdoc.models import (
     ApDocument,
     ApDocCostDistribution,
-    CompanyUnit,
     CostAccount,
-    Employee,
-) # flake8: noqa
+)
 from apflow.user.models import (
     User,
     Role,

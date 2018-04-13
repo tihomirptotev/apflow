@@ -8,7 +8,7 @@ from .models import Counterparty, CounterpartyNote
 
 class CounterpartyNoteSchema(ModelSchema, BaseAuditSchema):
 
-    url = fields.Method('self_url')
+    url = fields.Method('self_url', dump_omly=True)
 
     def self_url(self, obj):
         return self.request.route_url(
